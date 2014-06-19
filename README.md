@@ -3,7 +3,7 @@ ngMongo
 
 An angular and node module for connecting to mongo.
 
-ngMongo gives developers an easy way bind $scope variables to mongodb queries.
+ngMongo gives developers an easy way to bind $scope variables to mongodb queries.
 
 Check out the documentation [here](https://github.com/ratscrew/ngMongo/wiki)
 
@@ -38,7 +38,7 @@ Check out how it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-i
  * Security
  * Angular promises
 
-[Server Side Doc](https://github.com/ratscrew/ngMongo/wiki/Server-Side)
+[Server Side Docs](https://github.com/ratscrew/ngMongo/wiki/Server-Side)
 ***
 
 ## Angular Module
@@ -75,5 +75,5 @@ bind to query:
 * Undo unsaved changes
 * ...
 
-[Client Side Doc](https://github.com/ratscrew/ngMongo/wiki/Client-Side)
+[Client Side Docs](https://github.com/ratscrew/ngMongo/wiki/Client-Side)
 ***
