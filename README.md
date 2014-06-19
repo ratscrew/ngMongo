@@ -63,5 +63,14 @@ bind to query:
        };
     });
 
-"boundArray" will now update every time some one saves a document in "mycollection" with a "created" field that equals "me"
+"boundArray" will now update every time someone saves or updates a document in "mycollection" with a "created" field that equals "me"
+
+###key features
+
+* realtime auto syncing query
+* extendable documents object 
+* closely mirrored mongo functions
+* undo unsaved changes
+* ...
+
 ***
