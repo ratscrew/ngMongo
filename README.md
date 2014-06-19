@@ -5,7 +5,7 @@ An angular and node module for connecting to mongo.
 
 ngMongo gives developers an easy way bind $scope variables to mongodb queries.
 
-Check out the documentadion [here](https://github.com/ratscrew/ngMongo/wiki)
+Check out the documentation [here](https://github.com/ratscrew/ngMongo/wiki)
 
 Check out how it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-it-all-works)
 ***
