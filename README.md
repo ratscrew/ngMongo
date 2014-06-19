@@ -24,11 +24,19 @@ check out the documentadion [here](https://github.com/ratscrew/ngMongo/wiki)
 
 
 ###key features
-    -validation
-        before documents are updated
-        after docuemts are updated
-        before fields are updated
-        after fields are updated
+
+*validation
+ *before documents are updated
+ *after docuemts are updated
+ *before fields are updated
+ *after fields are updated
+*security
+ *roles based
+ *user based
+*public functions
+ *security
+ *angular promises
+ 
 ***
 
 ## Angular Module
