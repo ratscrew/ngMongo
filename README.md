@@ -9,8 +9,8 @@ check out the documentadion [here](https://github.com/ratscrew/ngMongo/wiki)
 
 ***
 
-# Node.js Module
-simple setup:
+## Node.js Module
+###simple setup:
 
     var express = require('express')
     , app = express()
@@ -24,9 +24,9 @@ simple setup:
 
 ***
 
-# Angular Module
+## Angular Module
 
-simple setup:
+###simple setup:
 
 link scripts:
 
