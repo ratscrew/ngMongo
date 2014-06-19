@@ -5,13 +5,13 @@ An angular and node module for connecting to mongo.
 
 ngMongo gives developers an easy way bind $scope variables to mongodb queries.
 
-check out the documentadion [here](https://github.com/ratscrew/ngMongo/wiki)
+Check out the documentadion [here](https://github.com/ratscrew/ngMongo/wiki)
 
-check out How it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-it-all-works)
+Check out how it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-it-all-works)
 ***
 
 ## Node.js Module
-###simple setup:
+###Simple setup:
 
     var express = require('express')
     , app = express()
@@ -24,26 +24,26 @@ check out How it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-i
     server.listen(80);
 
 
-###key features
+###Key features
 
-* validation
- * before documents are updated
- * after docuemts are updated
- * before fields are updated
- * after fields are updated
-* security
- * roles based
- * user based
-* public functions
- * security
- * angular promises
+* Validation
+ * Before documents are updated
+ * After docuemts are updated
+ * Before fields are updated
+ * After fields are updated
+* Security
+ * Roles based
+ * User based
+* Public functions
+ * Security
+ * Angular promises
 
 [Server Side Doc](https://github.com/ratscrew/ngMongo/wiki/Server-Side)
 ***
 
 ## Angular Module
 
-###simple setup:
+###Simple setup:
 
 link scripts:
 
@@ -51,7 +51,7 @@ link scripts:
      <script src="ngMongo.js"></script>
 
 
-config Angular:
+config angular:
    
     var myApp = angular.module('myApp', ['ngMongo']);
 
@@ -67,12 +67,12 @@ bind to query:
 
 "boundArray" will now update every time someone saves or updates a document in "mycollection" with a "created" field that equals "me"
 
-###key features
+###Key features
 
-* realtime auto syncing query
-* extendable documents object 
-* closely mirrored mongo functions
-* undo unsaved changes
+* Realtime auto syncing query
+* Extendable documents object 
+* Closely mirrored mongo functions
+* Undo unsaved changes
 * ...
 
 [Client Side Doc](https://github.com/ratscrew/ngMongo/wiki/Client-Side)
