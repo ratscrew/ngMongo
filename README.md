@@ -7,6 +7,7 @@ ngMongo gives developers an easy way bind $scope variables to mongodb queries.
 
 check out the documentadion [here](https://github.com/ratscrew/ngMongo/wiki)
 
+check out How it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-it-all-works)
 ***
 
 ## Node.js Module
@@ -36,7 +37,8 @@ check out the documentadion [here](https://github.com/ratscrew/ngMongo/wiki)
 * public functions
  * security
  * angular promises
- 
+
+[Server Side Doc](https://github.com/ratscrew/ngMongo/wiki/Server-Side)
 ***
 
 ## Angular Module
@@ -73,4 +75,5 @@ bind to query:
 * undo unsaved changes
 * ...
 
+[Client Side Doc](https://github.com/ratscrew/ngMongo/wiki/Client-Side)
 ***
