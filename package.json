@@ -1,0 +1,16 @@
+{
+  "name": "ngMongo",
+  "version": "0.0.1",
+  "description": "An angular and node module for connecting to mongo",
+  "main": "ngMongServer.js",
+  "author": {
+    "name": "Aidan Grace",
+    "email": "ratscrew2002@yahoo.com"
+  },
+  "repository"{
+	"type":"git",
+	"url":"https://github.com/ratscrew/ngMongo"
+  },
+  "keywords":["angular","mongo","mongodb", "firebase", "realtime", "socket.io"],
+  "license":"MIT"
+}
