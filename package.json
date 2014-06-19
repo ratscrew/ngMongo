@@ -1,16 +1,30 @@
 {
-  "name": "ngMongo",
-  "version": "0.0.1",
+  "name": "ngmongo",
+  "version": "0.0.0",
   "description": "An angular and node module for connecting to mongo",
   "main": "ngMongServer.js",
-  "author": {
-    "name": "Aidan Grace",
-    "email": "ratscrew2002@yahoo.com"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository"{
-	"type":"git",
-	"url":"https://github.com/ratscrew/ngMongo"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ratscrew/ngMongo.git"
   },
-  "keywords":["angular","mongo","mongodb", "firebase", "realtime", "socket.io"],
-  "license":"MIT"
+  "keywords": [
+    "angular",
+    "mongo",
+    "mongodb",
+    "firebase",
+    "realtime",
+    "socket.io"
+  ],
+  "author": "Aidan Grace",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ratscrew/ngMongo/issues"
+  },
+  "homepage": "https://github.com/ratscrew/ngMongo",
+  "dependencies": {
+    "express": "~4.4.3"
+  }
 }
