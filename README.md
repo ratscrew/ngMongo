@@ -22,6 +22,13 @@ check out the documentadion [here](https://github.com/ratscrew/ngMongo/wiki)
     var db = ngMongo.db('mydb');
     server.listen(80);
 
+
+###key features
+    -validation
+        before documents are updated
+        after docuemts are updated
+        before fields are updated
+        after fields are updated
 ***
 
 ## Angular Module
