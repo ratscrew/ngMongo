@@ -283,7 +283,7 @@
         });
 
         function sendFindUpdates(efSubscription,_id) {
-            var cursor, collection, ss = io.sockets.[efSubscription.socket], totalsCursor, f = {};
+            var cursor, collection, ss = io.sockets[efSubscription.socket], totalsCursor, f = {};
             if (!db[efSubscription.collection]) {                                                           //get collection
                 collection = db.collection(efSubscription.collection);
             }
