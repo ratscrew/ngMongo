@@ -53,9 +53,8 @@ link scripts:
 
 config angular:
    
-    var myApp = angular.module('myApp', ['ngMongo']);
-    
-    myApp.config(["$SocketsIo", function($SocketsIo) {
+    var myApp = angular.module('myApp', ['ngMongo'])
+    .config(["$SocketsIoProvider", function($SocketsIo) {
         $SocketsIo.url('http://localhost');
     }]);
 
