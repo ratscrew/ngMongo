@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/ratscrew/ngMongo",
   "dependencies": {
-    "express": "~4.4.3"
+    "express": "~4.4.3",
+    "mongojs": "~0.13.0"
   }
 }
