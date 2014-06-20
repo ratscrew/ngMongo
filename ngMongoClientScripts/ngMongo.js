@@ -3,7 +3,7 @@ var ngMongoModule = angular.module('ngMongo', []);
 // gives access to sockets.io and routting of returned responces/updates 
 // should be configuered to set url for the 
 ngMongoModule.provider('$SocketsIo', [function () {
-    var me = {connected:false}, me.url = = 'http://localhost';
+    var me = {connected:false, me.url : 'http://localhost'};
     
     this.url = function(newUrl){                                                              //set the socket.io client script url
         if(newUrl) me.url = newUrl;
