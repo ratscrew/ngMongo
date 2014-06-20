@@ -101,6 +101,9 @@ server.listen(80);
 <p>config angular:</p>
 
 <pre><code>var myApp = angular.module('myApp', ['ngMongo']);
+  myApp.config(["$SocketsIo", function($SocketsIo) {
+    $SocketsIo.url('http://localhost');
+}]);
 </code></pre>
 
 <p>bind to query:</p>
