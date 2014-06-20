@@ -1,6 +1,6 @@
 {
   "name": "ngmongo",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "An angular and node module for connecting to mongo",
   "main": "ngMongServer.js",
   "scripts": {
