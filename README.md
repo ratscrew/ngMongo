@@ -54,6 +54,10 @@ link scripts:
 config angular:
    
     var myApp = angular.module('myApp', ['ngMongo']);
+    
+    myApp.config(["$SocketsIo", function($SocketsIo) {
+        $SocketsIo.url('http://localhost');
+    }]);
 
 bind to query:
 
