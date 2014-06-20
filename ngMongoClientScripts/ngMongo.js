@@ -20,6 +20,7 @@ ngMongoModule.provider('$SocketsIo', [function () {
         return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
     }
 
+
     me.connect = function () {                                                                // called once if needed, handels respnce routing, may move to on('connect')
         if (me.connected == true ) {
             return true;
