@@ -1,19 +1,26 @@
 var ngMongoModule = angular.module('ngMongo', []);
 
-
+// gives access to sockets.io and routting of returned responces/updates 
+// should be configuered to set url for the 
 ngMongoModule.provider('$SocketsIo', [function () {
-    var me = {connected:false};
-    //me.url = 'https://localhost.com';
-    //me.url = 'http://3ccmvy1.crowell.com';
-    me.url = 'http://localhost';
-    me.qList = {};
-    me.rIdGen = function () { return Math.random().toString() + Math.random().toString(); };
+    var me = {connected:false}, _url = 'http://localhost';
+    
+    this.url = function(newUrl){                                                              //set the socket.io client script url
+        if(newUrl) _url = newUrl;
+        return _url;
+    };
+
+    me.url = _url;
+    me.qList = {};   //the obj for linking responces to requests
+
+    me.rIdGen = function () { return Math.random().toString() + Math.random().toString(); };  // Quick guid thats not a real guid, they take too long to create
+    
     me.isFunction = function (functionToCheck) {
         var getType = {};
         return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
     }
 
-    me.connect = function () {
+    me.connect = function () {                                                                // called once if needed, handels respnce routing, may move to on('connect')
         if (me.connected == true ) {
             return true;
         }
@@ -66,22 +73,49 @@ ngMongoModule.provider('$SocketsIo', [function () {
             }
         });
     }
+
     this.$get = function () {
         return me;
     }
     
 }]);
 
+// gives mongo like syntax to subscribe to mongo queries
 ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function ($SocketsIo, $timeout, $server) {
     this.query = function (collection) {
-        if ($SocketsIo.connected == false) $SocketsIo.connect();
-        var arrayResutls = [], count = 0, find, progress = 1, hasBeenCalled = false,totalsSkipLimits = true,totalsObj = {}, totals, totalsCalculatingDefault = 'Calculating...', projection, limit = null, sort = null,group = null, aggregate = null, progressCallBack, progressInc = .25, localVars = {}, newAtEnd = false, rid = $SocketsIo.rIdGen(), newDoc = doc, afterUpdate;
+        if ($SocketsIo.connected == false) $SocketsIo.connect();                                                          // connect via io if not
+        var arrayResutls = [],          // main object returned by everything                               
+        count = 0,                      // expected length 
+        find,                           // the where statment
+        progress = 1,                   // 0-1 % conplete **only works for simple queries**
+        hasBeenCalled = false,          // is this query active, has toArray been called
+        totalsSkipLimits = true,        // if using the totals grouping should they be for just the results returned or if the skip & limit are removed
+        totalsObj = {},                 // returned totals obj
+        totals,                         // a $group satment for the totals
+        totalsCalculatingDefault = 'Calculating...', // what to show before the totals are returned
+        projection,                     // $project satment
+        limit ,                         // $limit #
+        sort ,                          // $sort satment
+        group ,                         // $group satment
+        aggregate ,                     // $aggregate [satments]
+        progressCallBack,               // function on an progress  **only works for simple queries**
+        progressInc = .25,              // how offten do you get an update **only works for simple queries**
+        localVars = {},                 // a dictionary of 
+        newAtEnd = false,               // can be false or a new doc obj
+        rid = $SocketsIo.rIdGen(),      // give this query a "guid"
+        newDoc = doc,                   // the template doc applied to each item in the returned array
+        afterUpdate;                    // a functions called after each update
+
+
+        // removes all routing back to this query
         function clearQList() { if ($SocketsIo.qList[rid]) { delete $SocketsIo.qList[rid]; }; };
 
+        // makes the query request back to the server
         arrayResutls.$toArray = function (toArrayCallBack) {
-            arrayResutls.$cancel();
+            if(toArrayCallBack) afterUpdate = toArrayCallBack;
+            arrayResutls.$cancel();                                          // stops updates for an old query for this obj if there is any
             rid = $SocketsIo.rIdGen();
-            progress = 0;
+            progress = 0;                                                    // build request
             var data = { collection: collection, requestId: rid, find: find, progress: progressInc, newAtEnd: newAtEnd, length:1000, more: false, totalsSkipLimits: totalsSkipLimits }
             if(limit) {
                 data.limit = limit;
@@ -94,9 +128,9 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
             if(projection) data.projection = projection;
 
             hasBeenCalled = true;
-            $SocketsIo.socket.emit('find', data);
+            $SocketsIo.socket.emit('find', data);                          // make request
              
-            $SocketsIo.qList[rid] = {
+            $SocketsIo.qList[rid] = {                                      // setup routing
                 findReturn: function (err, docs, sentData) {
                     $timeout(function () {
                         progress = 1;
@@ -298,13 +332,22 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
         return arrayResutls;
     }
 
-    this.doc = doc;
+    this.doc = doc;                             //expose base doc
 
+    // the base doc for every item
+    // theDoc = item obj returned from server,
+    // collection = collection name as string, 
+    // localVar = an object with anything not saved back to the database, 
+    // parentQuery = the parent array
     function doc(theDoc, collection, localVar, parentQuery) {
         var rid = $SocketsIo.rIdGen(), inProgress = false;
+
         theDoc.localVar = localVar;
         if (!theDoc.localVar) theDoc.localVar = {};
-        theDoc.localVar.$oldDoc = strippedDoc();
+
+        theDoc.localVar.$oldDoc = strippedDoc();             // save origenal obj for comparisen latter
+
+        // removes data not be saved back to the database
         function strippedDoc(docObj) {
             if (!docObj) docObj = theDoc;
             var doc = {}, dumDoc = {};
@@ -316,7 +359,9 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
             angular.copy(dumDoc, doc);
             return doc;
         };
+
         function clearQList() { if ($SocketsIo.qList[rid]) { delete $SocketsIo.qList[rid]; }; };
+        
         theDoc.$save = function (updateMe) {
             theDoc.$cancelSave();
             rid = $SocketsIo.rIdGen();
@@ -329,7 +374,6 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
 
             if (data.doc.change && Object.keys(data.doc.change).length > 0) {
                 if (updateMe) data.updateMe = updateMe;
-                //console.log(deepMatch(strippedDoc(), strippedDoc(theDoc.localVar.$oldDoc)));
                 $SocketsIo.socket.emit('save', data);
                 theDoc.localVar.$oldDoc = strippedDoc();
                 $SocketsIo.qList[rid] = {
@@ -366,6 +410,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
             return this;
         };
 
+        // compares two objects and returns a dictionaly for files with old new and save statment
         function deepMatch(odj1, odj2) {
             var returnObj = {
                 _id: odj1._id,
@@ -409,6 +454,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
     }
 }]);
 
+// gives access to pubilc server functions via promisses
 ngMongoModule.service('$server', ['$SocketsIo', '$timeout', '$q', function ($SocketsIo, $timeout, $q) {
     this.functions = function (functionName, data) {
         var defer = $q.defer();
