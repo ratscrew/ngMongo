@@ -10,7 +10,6 @@ ngMongoModule.provider('$SocketsIo', [function () {
         return me.url ;
     };
 
-    me.url = _url;
     me.qList = {};   //the obj for linking responces to requests
 
     me.rIdGen = function () { return Math.random().toString() + Math.random().toString(); };  // Quick guid thats not a real guid, they take too long to create
