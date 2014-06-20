@@ -75,7 +75,7 @@ bind to query:
 * Realtime auto syncing query
 * Extendable documents object 
 * Closely mirrored mongo functions
-* Undo unsaved changes
+* Server functions via promises
 * ...
 
 [Client Side Docs](https://github.com/ratscrew/ngMongo/wiki/Client-Side)
