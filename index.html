@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="ngMongo : An angular and node module for connecting to mongo" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>ngMongo</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/ratscrew/ngMongo">View on GitHub</a>
+
+          <h1 id="project_title">ngMongo</h1>
+          <h2 id="project_tagline">An angular and node module for connecting to mongo</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/ratscrew/ngMongo/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/ratscrew/ngMongo/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>ngMongo gives developers an easy way to bind $scope variables to mongodb queries.</p>
+
+<p>Check out the documentation <a href="https://github.com/ratscrew/ngMongo/wiki">here</a></p>
+
+<p>Check out how it all works <a href="https://github.com/ratscrew/ngMongo/wiki/how-it-all-works">here</a></p>
+
+<pre><code>$ npm instal ngmongo
+</code></pre>
+
+<hr><h2>
+<a name="nodejs-module" class="anchor" href="#nodejs-module"><span class="octicon octicon-link"></span></a>Node.js Module</h2>
+
+<h3>
+<a name="simple-setup" class="anchor" href="#simple-setup"><span class="octicon octicon-link"></span></a>Simple setup:</h3>
+
+<pre><code>var express = require('express')
+, app = express()
+, http = require('http')
+, server = http.createServer(app)
+, io = require('socket.io').listen(server)
+, ngMongo = require('ngmongo')(io,app);
+
+var db = ngMongo.db('mydb');
+server.listen(80);
+</code></pre>
+
+<h3>
+<a name="key-features" class="anchor" href="#key-features"><span class="octicon octicon-link"></span></a>Key features</h3>
+
+<ul>
+<li>Validation
+
+<ul>
+<li>Before documents are updated</li>
+<li>After docuemts are updated</li>
+<li>Before fields are updated</li>
+<li>After fields are updated</li>
+</ul>
+</li>
+<li>Security
+
+<ul>
+<li>Roles based</li>
+<li>User based</li>
+</ul>
+</li>
+<li>Public functions
+
+<ul>
+<li>Security</li>
+<li>Angular promises</li>
+</ul>
+</li>
+</ul><p><a href="https://github.com/ratscrew/ngMongo/wiki/Server-Side">Server Side Docs</a></p>
+
+<hr><h2>
+<a name="angular-module" class="anchor" href="#angular-module"><span class="octicon octicon-link"></span></a>Angular Module</h2>
+
+<h3>
+<a name="simple-setup-1" class="anchor" href="#simple-setup-1"><span class="octicon octicon-link"></span></a>Simple setup:</h3>
+
+<p>link scripts:</p>
+
+<pre><code> &lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
+ &lt;script src="ngMongo.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>config angular:</p>
+
+<pre><code>var myApp = angular.module('myApp', ['ngMongo']);
+</code></pre>
+
+<p>bind to query:</p>
+
+<pre><code>myApp.controller('testController', function ($scope, $mongo) {
+   $scope.boundArray = $mongo.query('mycollection').$find({ created: 'me' }).$toArray();
+   $scope.saveItem = function(item){
+      item.$save();
+   };
+});
+</code></pre>
+
+<p>"boundArray" will now update every time someone saves or updates a document in "mycollection" with a "created" field that equals "me"</p>
+
+<h3>
+<a name="key-features-1" class="anchor" href="#key-features-1"><span class="octicon octicon-link"></span></a>Key features</h3>
+
+<ul>
+<li>Realtime auto syncing query</li>
+<li>Extendable documents object </li>
+<li>Closely mirrored mongo functions</li>
+<li>Undo unsaved changes</li>
+<li>...</li>
+</ul><p><a href="https://github.com/ratscrew/ngMongo/wiki/Client-Side">Client Side Docs</a></p>
+
+<hr>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">ngMongo maintained by <a href="https://github.com/ratscrew">ratscrew</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
