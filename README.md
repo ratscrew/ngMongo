@@ -75,6 +75,7 @@ bind to query:
 * Realtime auto syncing query
 * Extendable documents object 
 * Closely mirrored mongo functions
+* Chainable functions
 * Server functions via promises
 * ...
 
