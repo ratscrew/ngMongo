@@ -1,0 +1,151 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'publish' ]
+2 info using npm@1.3.21
+3 info using node@v0.10.24
+4 verbose node symlink C:\Program Files\nodejs\\node.exe
+5 verbose publish [ '.' ]
+6 verbose cache add [ '.', null ]
+7 verbose cache add name=undefined spec="." args=[".",null]
+8 verbose parsed url { protocol: null,
+8 verbose parsed url   slashes: null,
+8 verbose parsed url   auth: null,
+8 verbose parsed url   host: null,
+8 verbose parsed url   port: null,
+8 verbose parsed url   hostname: null,
+8 verbose parsed url   hash: null,
+8 verbose parsed url   search: null,
+8 verbose parsed url   query: null,
+8 verbose parsed url   pathname: '.',
+8 verbose parsed url   path: '.',
+8 verbose parsed url   href: '.' }
+9 silly lockFile 3a52ce78- .
+10 verbose lock . C:\Users\gracea\AppData\Roaming\npm-cache\3a52ce78-.lock
+11 verbose tar pack [ 'C:\\Users\\gracea\\AppData\\Local\\Temp\\npm-6180-4d3TNQdZ\\1403284160729-0.9284404064528644\\tmp.tgz',
+11 verbose tar pack   '.' ]
+12 verbose tarball C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz
+13 verbose folder .
+14 info prepublish ngmongo@0.0.1
+15 silly lockFile 1f1177db-tar tar://.
+16 verbose lock tar://. C:\Users\gracea\AppData\Roaming\npm-cache\1f1177db-tar.lock
+17 silly lockFile 31c9bc3d-60729-0-9284404064528644-tmp-tgz tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz
+18 verbose lock tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz C:\Users\gracea\AppData\Roaming\npm-cache\31c9bc3d-60729-0-9284404064528644-tmp-tgz.lock
+19 silly lockFile 1f1177db-tar tar://.
+20 silly lockFile 1f1177db-tar tar://.
+21 silly lockFile 31c9bc3d-60729-0-9284404064528644-tmp-tgz tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz
+22 silly lockFile 31c9bc3d-60729-0-9284404064528644-tmp-tgz tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz
+23 verbose tar unpack C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz
+24 silly lockFile d72065c2-60729-0-9284404064528644-package tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package
+25 verbose lock tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package C:\Users\gracea\AppData\Roaming\npm-cache\d72065c2-60729-0-9284404064528644-package.lock
+26 silly lockFile 31c9bc3d-60729-0-9284404064528644-tmp-tgz tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz
+27 verbose lock tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz C:\Users\gracea\AppData\Roaming\npm-cache\31c9bc3d-60729-0-9284404064528644-tmp-tgz.lock
+28 silly gunzTarPerm modes [ '755', '644' ]
+29 silly gunzTarPerm extractEntry package.json
+30 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+31 silly gunzTarPerm extractEntry README.md
+32 silly gunzTarPerm modified mode [ 'README.md', 438, 420 ]
+33 silly gunzTarPerm extractEntry LICENSE
+34 silly gunzTarPerm modified mode [ 'LICENSE', 438, 420 ]
+35 silly gunzTarPerm extractEntry ngMongServer.js
+36 silly gunzTarPerm modified mode [ 'ngMongServer.js', 438, 420 ]
+37 silly gunzTarPerm extractEntry ngMongoClientScripts/ngMongo.js
+38 silly gunzTarPerm modified mode [ 'ngMongoClientScripts/ngMongo.js', 438, 420 ]
+39 silly lockFile d72065c2-60729-0-9284404064528644-package tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package
+40 silly lockFile d72065c2-60729-0-9284404064528644-package tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package
+41 silly lockFile 31c9bc3d-60729-0-9284404064528644-tmp-tgz tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz
+42 silly lockFile 31c9bc3d-60729-0-9284404064528644-tmp-tgz tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\tmp.tgz
+43 verbose tar pack [ 'C:\\Users\\gracea\\AppData\\Roaming\\npm-cache\\ngmongo\\0.0.1\\package.tgz',
+43 verbose tar pack   'C:\\Users\\gracea\\AppData\\Local\\Temp\\npm-6180-4d3TNQdZ\\1403284160729-0.9284404064528644\\package' ]
+44 verbose tarball C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+45 verbose folder C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package
+46 silly lockFile d72065c2-60729-0-9284404064528644-package tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package
+47 verbose lock tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package C:\Users\gracea\AppData\Roaming\npm-cache\d72065c2-60729-0-9284404064528644-package.lock
+48 silly lockFile 1db663b1--cache-ngmongo-0-0-1-package-tgz tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+49 verbose lock tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz C:\Users\gracea\AppData\Roaming\npm-cache\1db663b1--cache-ngmongo-0-0-1-package-tgz.lock
+50 silly lockFile d72065c2-60729-0-9284404064528644-package tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package
+51 silly lockFile d72065c2-60729-0-9284404064528644-package tar://C:\Users\gracea\AppData\Local\Temp\npm-6180-4d3TNQdZ\1403284160729-0.9284404064528644\package
+52 silly lockFile 1db663b1--cache-ngmongo-0-0-1-package-tgz tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+53 silly lockFile 1db663b1--cache-ngmongo-0-0-1-package-tgz tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+54 silly lockFile 0473531e--npm-cache-ngmongo-0-0-1-package C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package
+55 verbose lock C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package C:\Users\gracea\AppData\Roaming\npm-cache\0473531e--npm-cache-ngmongo-0-0-1-package.lock
+56 silly lockFile 0473531e--npm-cache-ngmongo-0-0-1-package C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package
+57 silly lockFile 0473531e--npm-cache-ngmongo-0-0-1-package C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package
+58 verbose tar unpack C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+59 silly lockFile 9b3c473e--npm-cache-ngmongo-0-0-1-package tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package
+60 verbose lock tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package C:\Users\gracea\AppData\Roaming\npm-cache\9b3c473e--npm-cache-ngmongo-0-0-1-package.lock
+61 silly lockFile 1db663b1--cache-ngmongo-0-0-1-package-tgz tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+62 verbose lock tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz C:\Users\gracea\AppData\Roaming\npm-cache\1db663b1--cache-ngmongo-0-0-1-package-tgz.lock
+63 silly gunzTarPerm modes [ '755', '644' ]
+64 silly gunzTarPerm extractEntry package.json
+65 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+66 silly gunzTarPerm extractEntry README.md
+67 silly gunzTarPerm modified mode [ 'README.md', 438, 420 ]
+68 silly gunzTarPerm extractEntry LICENSE
+69 silly gunzTarPerm modified mode [ 'LICENSE', 438, 420 ]
+70 silly gunzTarPerm extractEntry ngMongServer.js
+71 silly gunzTarPerm modified mode [ 'ngMongServer.js', 438, 420 ]
+72 silly gunzTarPerm extractEntry ngMongoClientScripts/ngMongo.js
+73 silly gunzTarPerm modified mode [ 'ngMongoClientScripts/ngMongo.js', 438, 420 ]
+74 silly lockFile 9b3c473e--npm-cache-ngmongo-0-0-1-package tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package
+75 silly lockFile 9b3c473e--npm-cache-ngmongo-0-0-1-package tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package
+76 silly lockFile 1db663b1--cache-ngmongo-0-0-1-package-tgz tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+77 silly lockFile 1db663b1--cache-ngmongo-0-0-1-package-tgz tar://C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+78 verbose chmod C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz 644
+79 silly chown skipping for windows C:\Users\gracea\AppData\Roaming\npm-cache\ngmongo\0.0.1\package.tgz
+80 silly lockFile 3a52ce78- .
+81 silly lockFile 3a52ce78- .
+82 silly publish { name: 'ngmongo',
+82 silly publish   version: '0.0.1',
+82 silly publish   description: 'An angular and node module for connecting to mongo',
+82 silly publish   main: 'ngMongServer.js',
+82 silly publish   scripts: { test: 'echo "Error: no test specified" && exit 1' },
+82 silly publish   repository: { type: 'git', url: 'https://github.com/ratscrew/ngMongo.git' },
+82 silly publish   keywords:
+82 silly publish    [ 'angular',
+82 silly publish      'mongo',
+82 silly publish      'mongodb',
+82 silly publish      'firebase',
+82 silly publish      'realtime',
+82 silly publish      'socket.io' ],
+82 silly publish   author: { name: 'Aidan Grace' },
+82 silly publish   license: 'MIT',
+82 silly publish   bugs: { url: 'https://github.com/ratscrew/ngMongo/issues' },
+82 silly publish   homepage: 'https://github.com/ratscrew/ngMongo',
+82 silly publish   dependencies: { express: '~4.4.3', mongojs: '~0.13.0' },
+82 silly publish   readme: 'ngMongo\r\n=======\r\n\r\nAn angular and node module for connecting to mongo.\r\n\r\nngMongo gives developers an easy way to bind $scope variables to mongodb queries.\r\n\r\nCheck out the documentation [here](https://github.com/ratscrew/ngMongo/wiki)\r\n\r\nCheck out how it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-it-all-works)\r\n***\r\n\r\n## Node.js Module\r\n###Simple setup:\r\n\r\n    var express = require(\'express\')\r\n    , app = express()\r\n    , http = require(\'http\')\r\n    , server = http.createServer(app)\r\n    , io = require(\'socket.io\').listen(server)\r\n    , ngMongo = require(\'ngmongo\')(io,app);\r\n\r\n    var db = ngMongo.db(\'mydb\');\r\n    server.listen(80);\r\n\r\n\r\n###Key features\r\n\r\n* Validation\r\n * Before documents are updated\r\n * After docuemts are updated\r\n * Before fields are updated\r\n * After fields are updated\r\n* Security\r\n * Roles based\r\n * User based\r\n* Public functions\r\n * Security\r\n * Angular promises\r\n\r\n[Server Side Docs](https://github.com/ratscrew/ngMongo/wiki/Server-Side)\r\n***\r\n\r\n## Angular Module\r\n\r\n###Simple setup:\r\n\r\nlink scripts:\r\n\r\n     <script src="/socket.io/socket.io.js"></script>\r\n     <script src="ngMongo.js"></script>\r\n\r\n\r\nconfig angular:\r\n   \r\n    var myApp = angular.module(\'myApp\', [\'ngMongo\']);\r\n    \r\n    myApp.config(["$SocketsIo", function($SocketsIo) {\r\n        $SocketsIo.url(\'http://localhost\');\r\n    }]);\r\n\r\nbind to query:\r\n\r\n\r\n    myApp.controller(\'testController\', function ($scope, $mongo) {\r\n       $scope.boundArray = $mongo.query(\'mycollection\').$find({ created: \'me\' }).$toArray();\r\n       $scope.saveItem = function(item){\r\n          item.$save();\r\n       };\r\n    });\r\n\r\n"boundArray" will now update every time someone saves or updates a document in "mycollection" with a "created" field that equals "me"\r\n\r\n###Key features\r\n\r\n* Realtime auto syncing query\r\n* Extendable documents object \r\n* Closely mirrored mongo functions\r\n* Undo unsaved changes\r\n* ...\r\n\r\n[Client Side Docs](https://github.com/ratscrew/ngMongo/wiki/Client-Side)\r\n***\r\n',
+82 silly publish   readmeFilename: 'README.md',
+82 silly publish   _id: 'ngmongo@0.0.1',
+82 silly publish   dist: { shasum: 'd7102fab656a394f94cde294e5002bf21293a094' },
+82 silly publish   _from: '.' }
+83 verbose url raw ngmongo
+84 verbose url resolving [ 'https://registry.npmjs.org/', './ngmongo' ]
+85 verbose url resolved https://registry.npmjs.org/ngmongo
+86 info trying registry request attempt 1 at 13:09:21
+87 http PUT https://registry.npmjs.org/ngmongo
+88 http 403 https://registry.npmjs.org/ngmongo
+89 info trying registry request attempt 1 at 13:09:22
+90 http PUT https://registry.npmjs.org/ngmongo
+91 http 403 https://registry.npmjs.org/ngmongo
+92 error publish Failed PUT 403
+93 error Error: forbidden cannot modify pre-existing version: 0.0.1
+93 error old={"name":"ngmongo","version":"0.0.1","description":"An angular and node module for connecting to mongo","main":"ngMongServer.js","scripts":{"test":"echo \"Error: no test specified\" && exit 1"},"repository":{"type":"git","url":"https://github.com/ratscrew/ngMongo.git"},"keywords":["angular","mongo","mongodb","firebase","realtime","socket.io"],"author":{"name":"Aidan Grace"},"license":"MIT","bugs":{"url":"https://github.com/ratscrew/ngMongo/issues"},"homepage":"https://github.com/ratscrew/ngMongo","dependencies":{"express":"~4.4.3","mongojs":"~0.13.0"},"_id":"ngmongo@0.0.1","dist":{"shasum":"c35e85cd1ac26c6f71814dfce24710f8e0126d01","tarball":"http://registry.npmjs.org/ngmongo/-/ngmongo-0.0.1.tgz"},"_from":".","_npmVersion":"1.3.21","_npmUser":{"name":"ratscrew","email":"Ratscrew2002@yahoo.com"},"maintainers":[{"name":"ratscrew","email":"Ratscrew2002@yahoo.com"}]}
+93 error new={"name":"ngmongo","version":"0.0.1","description":"An angular and node module for connecting to mongo","main":"ngMongServer.js","scripts":{"test":"echo \"Error: no test specified\" && exit 1"},"repository":{"type":"git","url":"https://github.com/ratscrew/ngMongo.git"},"keywords":["angular","mongo","mongodb","firebase","realtime","socket.io"],"author":{"name":"Aidan Grace"},"license":"MIT","bugs":{"url":"https://github.com/ratscrew/ngMongo/issues"},"homepage":"https://github.com/ratscrew/ngMongo","dependencies":{"express":"~4.4.3","mongojs":"~0.13.0"},"readme":"ngMongo\u000d\u000a=======\u000d\u000a\u000d\u000aAn angular and node module for connecting to mongo.\u000d\u000a\u000d\u000angMongo gives developers an easy way to bind $scope variables to mongodb queries.\u000d\u000a\u000d\u000aCheck out the documentation [here](https://github.com/ratscrew/ngMongo/wiki)\u000d\u000a\u000d\u000aCheck out how it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-it-all-works)\u000d\u000a***\u000d\u000a\u000d\u000a## Node.js Module\u000d\u000a###Simple setup:\u000d\u000a\u000d\u000a    var express = require('express')\u000d\u000a    , app = express()\u000d\u000a    , http = require('http')\u000d\u000a    , server = http.createServer(app)\u000d\u000a    , io = require('socket.io').listen(server)\u000d\u000a    , ngMongo = require('ngmongo')(io,app);\u000d\u000a\u000d\u000a    var db = ngMongo.db('mydb');\u000d\u000a    server.listen(80);\u000d\u000a\u000d\u000a\u000d\u000a###Key features\u000d\u000a\u000d\u000a* Validation\u000d\u000a * Before documents are updated\u000d\u000a * After docuemts are updated\u000d\u000a * Before fields are updated\u000d\u000a * After fields are updated\u000d\u000a* Security\u000d\u000a * Roles based\u000d\u000a * User based\u000d\u000a* Public functions\u000d\u000a * Security\u000d\u000a * Angular promises\u000d\u000a\u000d\u000a[Server Side Docs](https://github.com/ratscrew/ngMongo/wiki/Server-Side)\u000d\u000a***\u000d\u000a\u000d\u000a## Angular Module\u000d\u000a\u000d\u000a###Simple setup:\u000d\u000a\u000d\u000alink scripts:\u000d\u000a\u000d\u000a     <script src=\"/socket.io/socket.io.js\"></script>\u000d\u000a     <script src=\"ngMongo.js\"></script>\u000d\u000a\u000d\u000a\u000d\u000aconfig angular:\u000d\u000a   \u000d\u000a    var myApp = angular.module('myApp', ['ngMongo']);\u000d\u000a    \u000d\u000a    myApp.config([\"$SocketsIo\", function($SocketsIo) {\u000d\u000a        $SocketsIo.url('http://localhost');\u000d\u000a    }]);\u000d\u000a\u000d\u000abind to query:\u000d\u000a\u000d\u000a\u000d\u000a    myApp.controller('testController', function ($scope, $mongo) {\u000d\u000a       $scope.boundArray = $mongo.query('mycollection').$find({ created: 'me' }).$toArray();\u000d\u000a       $scope.saveItem = function(item){\u000d\u000a          item.$save();\u000d\u000a       };\u000d\u000a    });\u000d\u000a\u000d\u000a\"boundArray\" will now update every time someone saves or updates a document in \"mycollection\" with a \"created\" field that equals \"me\"\u000d\u000a\u000d\u000a###Key features\u000d\u000a\u000d\u000a* Realtime auto syncing query\u000d\u000a* Extendable documents object \u000d\u000a* Closely mirrored mongo functions\u000d\u000a* Undo unsaved changes\u000d\u000a* ...\u000d\u000a\u000d\u000a[Client Side Docs](https://github.com/ratscrew/ngMongo/wiki/Client-Side)\u000d\u000a***\u000d\u000a","readmeFilename":"README.md","_id":"ngmongo@0.0.1","dist":{"shasum":"d7102fab656a394f94cde294e5002bf21293a094","tarball":"http://registry.npmjs.org/ngmongo/-/ngmongo-0.0.1.tgz"},"_from":".","_npmVersion":"1.3.21","_npmUser":{"name":"ratscrew","email":"Ratscrew2002@yahoo.com"},"maintainers":[{"name":"ratscrew","email":"Ratscrew2002@yahoo.com"}]}: ngmongo
+93 error     at RegClient.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-client\lib\request.js:275:14)
+93 error     at Request.self.callback (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:123:22)
+93 error     at Request.EventEmitter.emit (events.js:98:17)
+93 error     at Request.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:893:14)
+93 error     at Request.EventEmitter.emit (events.js:117:20)
+93 error     at IncomingMessage.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:844:12)
+93 error     at IncomingMessage.EventEmitter.emit (events.js:117:20)
+93 error     at _stream_readable.js:920:16
+93 error     at process._tickCallback (node.js:415:13)
+94 error If you need help, you may report this *entire* log,
+94 error including the npm and node versions, at:
+94 error     <http://github.com/isaacs/npm/issues>
+95 error System Windows_NT 6.1.7601
+96 error command "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "publish"
+97 error cwd C:\Users\gracea\Documents\GitHub\ngMongo
+98 error node -v v0.10.24
+99 error npm -v 1.3.21
+100 verbose exit [ 1, true ]
