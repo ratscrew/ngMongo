@@ -17,6 +17,7 @@
     if(dbName) publicObj.db(dbName);
 
     publicObj.clearSubscriptions = function(dbName){ 
+        if(dbName) publicObj.db(dbName);
         subscriptions.remove({});
     };
 
@@ -45,38 +46,38 @@
                 socket.emit('publicFunctionReturn', { err: err, dataSend: data, dataReturned: dataReturned });
             };
 
-            if(socket.handshake && socket.handshake.user){
+            if(socket.request && socket.request.user){
                 if (publicObj.security[fx] && publicObj.security[fx]['default'] != undefined) {
                     hasSecurity = true;
                     if (isFunction(security[fx]['default'])) {
-                        if (publicObj.security[fx]['default'](socket.handshake.user)) {
-                            publicObj.publicFunctions[fx](data, callback, socket.handshake.user);
+                        if (publicObj.security[fx]['default'](socket.request.user)) {
+                            publicObj.publicFunctions[fx](data, callback, socket.request.user);
                             return true;
                         };
                     }
                     else {
                         if (publicObj.security[fx]['default']) {
-                            publicObj.publicFunctions[fx](data, callback, socket.handshake.user);
+                            publicObj.publicFunctions[fx](data, callback, socket.request.user);
                             return true;
                         };
                     }
                 }
-                if (socket.handshake.user.roles) {
-                    for (var i in socket.handshake.user.roles) {
-                        if (publicObj.security[fx] && publicObj.security[fx][socket.handshake.user.roles[i]] != undefined && isFunction(publicObj.security[fx][socket.handshake.user.roles[i]])) {
-                            if (publicObj.security[fx] && publicObj.security[fx][socket.handshake.user.roles[i]] != undefined) {
+                if (socket.request.user.roles) {
+                    for (var i in socket.request.user.roles) {
+                        if (publicObj.security[fx] && publicObj.security[fx][socket.request.user.roles[i]] != undefined && isFunction(publicObj.security[fx][socket.request.user.roles[i]])) {
+                            if (publicObj.security[fx] && publicObj.security[fx][socket.request.user.roles[i]] != undefined) {
                                 hasSecurity = true;
-                                if (isFunction(publicObj.security[fx][socket.handshake.user.roles[i]])) {
-                                    if (publicObj.security[fx][socket.handshake.user.roles[i]](socket.handshake.user)) {
-                                        publicObj.publicFunctions[fx](data, callback, socket.handshake.user);
+                                if (isFunction(publicObj.security[fx][socket.request.user.roles[i]])) {
+                                    if (publicObj.security[fx][socket.request.user.roles[i]](socket.request.user)) {
+                                        publicObj.publicFunctions[fx](data, callback, socket.request.user);
                                         return true;
                                     };
                                 }
                             }
-                            else if (publicObj.security[fx] && publicObj.security[fx][socket.handshake.user.roles[i]] != undefined) {
+                            else if (publicObj.security[fx] && publicObj.security[fx][socket.request.user.roles[i]] != undefined) {
                                 hasSecurity = true;
-                                if (publicObj.security[fx][socket.handshake.user.roles[i]]) {
-                                    publicObj.publicFunctions[fx](data, callback, socket.handshake.user);
+                                if (publicObj.security[fx][socket.request.user.roles[i]]) {
+                                    publicObj.publicFunctions[fx](data, callback, socket.request.user);
                                     return true;
                                 };
                             }
@@ -85,7 +86,7 @@
                 }
             } else { hasSecurity = true; }
 
-            if (hasSecurity == false) publicObj.publicFunctions[fx](data, callback, socket.handshake.user);
+            if (hasSecurity == false) publicObj.publicFunctions[fx](data, callback, socket.request.user);
             return true;
 
         });
@@ -103,24 +104,24 @@
             data.command = 'find';
 
             var cursor, totalsCursor, collection, f = {}, rolesFilter = [];
-        
-            if(socket.handshake && socket.handshake.user){
+
+            if(socket.request && socket.request.user){
                                                                                                                 //build security filters
                 if (publicObj.security[data.collection] && publicObj.security[data.collection].read['default']) {
                     if (isFunction(publicObj.security[data.collection].read['default'])) {                                    //collection level filter
-                        rolesFilter.push(publicObj.security[data.collection].read['default'](socket.handshake.user));
+                        rolesFilter.push(publicObj.security[data.collection].read['default'](socket.request.user));
                     }
                     else {
                         rolesFilter.push(publicObj.security[data.collection].read['default']);
                     }
                 }
-                if (socket.handshake.user.roles) {
-                    for (var i in socket.handshake.user.roles) {                                                    //user level filters
-                        if (publicObj.security[data.collection] && publicObj.security[data.collection].read[socket.handshake.user.roles[i]] != undefined && isFunction(publicObj.security[data.collection].read[socket.handshake.user.roles[i]])) {
-                            rolesFilter.push(publicObj.security[data.collection].read[socket.handshake.user.roles[i]](socket.handshake.user));
+                if (socket.request.user.roles) {
+                    for (var i in socket.request.user.roles) {                                                    //user level filters
+                        if (publicObj.security[data.collection] && publicObj.security[data.collection].read[socket.request.user.roles[i]] != undefined && isFunction(publicObj.security[data.collection].read[socket.request.user.roles[i]])) {
+                            rolesFilter.push(publicObj.security[data.collection].read[socket.request.user.roles[i]](socket.request.user));
                         }
-                        else if (publicObj.security[data.collection] && publicObj.security[data.collection].read[socket.handshake.user.roles[i]]) {
-                            rolesFilter.push(publicObj.security[data.collection].read[socket.handshake.user.roles[i]]);
+                        else if (publicObj.security[data.collection] && publicObj.security[data.collection].read[socket.request.user.roles[i]]) {
+                            rolesFilter.push(publicObj.security[data.collection].read[socket.request.user.roles[i]]);
                         }
                     }
                 }
@@ -283,29 +284,31 @@
         });
 
         function sendFindUpdates(efSubscription,_id) {
-            var cursor, collection, ss = io.sockets[efSubscription.socket], totalsCursor, f = {};
+            
+            var cursor, collection, ss = socket.broadcast.to(efSubscription.socket), totalsCursor, f = {};
             if (!db[efSubscription.collection]) {                                                           //get collection
                 collection = db.collection(efSubscription.collection);
             }
             var rolesFilter = [];        
-        
-            if(ss.handshake && ss.handshake.user){
+            //console.log(ss.request);
+            //console.log(ss.request.user);
+            if(ss.request && ss.request.user){
                                                                                    //build security filters
                 if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read['default']) {
                     if (isFunction(publicObj.security[efSubscription.collection].read['default'])) {                      //default security
-                        rolesFilter.push(publicObj.security[efSubscription.collection].read['default'](ss.handshake.user));
+                        rolesFilter.push(publicObj.security[efSubscription.collection].read['default'](ss.request.user));
                     }
                     else {
                         rolesFilter.push(publicObj.security[efSubscription.collection].read['default']);
                     }
                 }
-                if (ss.handshake.user.roles) {
-                    for (var i in ss.handshake.user.roles) {                                                      //user level security
-                        if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.handshake.user.roles[i]] != undefined && isFunction(publicObj.security[efSubscription.collection].read[ss.handshake.user.roles[i]])) {
-                            rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.handshake.user.roles[i]](ss.handshake.user));
+                if (ss.request.user.roles) {
+                    for (var i in ss.request.user.roles) {                                                      //user level security
+                        if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]] != undefined && isFunction(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]])) {
+                            rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]](ss.request.user));
                         }
-                        else if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.handshake.user.roles[i]]) {
-                            rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.handshake.user.roles[i]]);
+                        else if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]]) {
+                            rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]]);
                         }
                     }
                 }
