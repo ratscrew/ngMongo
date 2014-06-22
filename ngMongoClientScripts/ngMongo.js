@@ -71,8 +71,7 @@ ngMongoModule.provider('$SocketsIo', [function () {
 
     };
 
-    io.on('connect',routing)
-    io.on('reconnect',routing)
+
 
     me.connect = function () {                                                                // called once if needed, handels respnce routing, may move to on('connect')
         if (me.connected == true ) {
@@ -80,7 +79,9 @@ ngMongoModule.provider('$SocketsIo', [function () {
         }
         me.socket = io.connect(me.url);
         me.connected = true;
-
+        me.socket.io.on('connect',routing);
+        me.socket.io.on('reconnect',routing);
+        routing();
     }
 
     this.$get = function () {
@@ -465,16 +466,17 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
 
 // gives access to pubilc server functions via promisses
 ngMongoModule.service('$server', ['$SocketsIo', '$timeout', '$q', function ($SocketsIo, $timeout, $q) {
-    this.function = function (functionName, data) {
+    this.functions = function (functionName, data) {
         var defer = $q.defer();
         var rid = $SocketsIo.rIdGen();
         $SocketsIo.socket.emit('publicFunction', { functionName: functionName, requestId: rid, data:data });
         $SocketsIo.qList[rid] = {
             publicFunctionReturn: function (err, data, sentData) {
-                //$timeout(function () {
+
                 if ($SocketsIo.qList[rid]) { delete $SocketsIo.qList[rid]; };
+                if(err) defer.reject(data);
                 defer.resolve(data);
-                //});
+
             }
         }
         return defer.promise;
