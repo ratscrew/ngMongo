@@ -20,12 +20,8 @@ ngMongoModule.provider('$SocketsIo', [function () {
     }
 
 
-    me.connect = function () {                                                                // called once if needed, handels respnce routing, may move to on('connect')
-        if (me.connected == true ) {
-            return true;
-        }
-        me.socket = io.connect(me.url);
-        me.connected = true;
+
+    var routing = function(){
 
         me.socket.on('publicFunctionReturn', function (data) {
             if (me.qList[data.dataSend.requestId] && me.qList[data.dataSend.requestId].publicFunctionReturn) {
@@ -72,6 +68,19 @@ ngMongoModule.provider('$SocketsIo', [function () {
                 me.qList[data.dataSend.requestId].deleteReturn(data.dataSent);
             }
         });
+
+    };
+
+    io.on('connect',routing)
+    io.on('reconnect',routing)
+
+    me.connect = function () {                                                                // called once if needed, handels respnce routing, may move to on('connect')
+        if (me.connected == true ) {
+            return true;
+        }
+        me.socket = io.connect(me.url);
+        me.connected = true;
+
     }
 
     this.$get = function () {
@@ -456,7 +465,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
 
 // gives access to pubilc server functions via promisses
 ngMongoModule.service('$server', ['$SocketsIo', '$timeout', '$q', function ($SocketsIo, $timeout, $q) {
-    this.functions = function (functionName, data) {
+    this.function = function (functionName, data) {
         var defer = $q.defer();
         var rid = $SocketsIo.rIdGen();
         $SocketsIo.socket.emit('publicFunction', { functionName: functionName, requestId: rid, data:data });

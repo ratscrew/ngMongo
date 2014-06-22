@@ -47,21 +47,6 @@
             };
 
             if(socket.request && socket.request.user){
-                if (publicObj.security[fx] && publicObj.security[fx]['default'] != undefined) {
-                    hasSecurity = true;
-                    if (isFunction(security[fx]['default'])) {
-                        if (publicObj.security[fx]['default'](socket.request.user)) {
-                            publicObj.publicFunctions[fx](data, callback, socket.request.user);
-                            return true;
-                        };
-                    }
-                    else {
-                        if (publicObj.security[fx]['default']) {
-                            publicObj.publicFunctions[fx](data, callback, socket.request.user);
-                            return true;
-                        };
-                    }
-                }
                 if (socket.request.user.roles) {
                     for (var i in socket.request.user.roles) {
                         if (publicObj.security[fx] && publicObj.security[fx][socket.request.user.roles[i]] != undefined && isFunction(publicObj.security[fx][socket.request.user.roles[i]])) {
@@ -69,7 +54,7 @@
                                 hasSecurity = true;
                                 if (isFunction(publicObj.security[fx][socket.request.user.roles[i]])) {
                                     if (publicObj.security[fx][socket.request.user.roles[i]](socket.request.user)) {
-                                        publicObj.publicFunctions[fx](data, callback, socket.request.user);
+                                        publicObj.publicFunctions[fx](data.data, callback, socket.request.user);
                                         return true;
                                     };
                                 }
@@ -77,11 +62,26 @@
                             else if (publicObj.security[fx] && publicObj.security[fx][socket.request.user.roles[i]] != undefined) {
                                 hasSecurity = true;
                                 if (publicObj.security[fx][socket.request.user.roles[i]]) {
-                                    publicObj.publicFunctions[fx](data, callback, socket.request.user);
+                                    publicObj.publicFunctions[fx](data.data, callback, socket.request.user);
                                     return true;
                                 };
                             }
                         }
+                    }
+                }                
+                if (publicObj.security[fx] && publicObj.security[fx]['default'] != undefined) {
+                    hasSecurity = true;
+                    if (isFunction(security[fx]['default'])) {
+                        if (publicObj.security[fx]['default'](socket.request.user)) {
+                            publicObj.publicFunctions[fx](data.data, callback, socket.request.user);
+                            return true;
+                        };
+                    }
+                    else {
+                        if (publicObj.security[fx]['default']) {
+                            publicObj.publicFunctions[fx](data.data, callback, socket.request.user);
+                            return true;
+                        };
                     }
                 }
             } else { hasSecurity = true; }
