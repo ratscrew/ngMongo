@@ -86,7 +86,7 @@
                 }
             } else { hasSecurity = true; }
 
-            if (hasSecurity == false) publicObj.publicFunctions[fx](data, callback, socket.request.user);
+            if (hasSecurity == false) publicObj.publicFunctions[fx](data.data, callback, socket.request.user);
             return true;
 
         });
@@ -130,15 +130,20 @@
             if (!db[data.collection]) {
                 collection = db.collection(data.collection);
             }
+            
             if (data.find != undefined) {
-                if (data.find._id) data.find[k] = mongojs.ObjectId(data.find._id);                          //convert _id to id object
+                var ff = copy(data.find);
+
+                convertRegEx(ff);
+                //console.log(ff);
+                if (ff._id) ff._id = mongojs.ObjectId(ff._id);                          //convert _id to id object
                                                                                                             //combind secutiy filters and find
                 if (rolesFilter.length > 0) {
-                    f.$and = [data.find, { $or: rolesFilter }]
+                    f.$and = [ff, { $or: rolesFilter }]
                
                 }
                 else {
-                    f = data.find;
+                    f = ff;
                 }
             }
             else if (rolesFilter.length > 0) {
@@ -283,166 +288,7 @@
 
         });
 
-        function sendFindUpdates(efSubscription,_id) {
-            
-            var cursor, collection, ss = socket.broadcast.to(efSubscription.socket), totalsCursor, f = {};
-            if (!db[efSubscription.collection]) {                                                           //get collection
-                collection = db.collection(efSubscription.collection);
-            }
-            var rolesFilter = [];        
-            //console.log(ss.request);
-            //console.log(ss.request.user);
-            if(ss.request && ss.request.user){
-                                                                                   //build security filters
-                if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read['default']) {
-                    if (isFunction(publicObj.security[efSubscription.collection].read['default'])) {                      //default security
-                        rolesFilter.push(publicObj.security[efSubscription.collection].read['default'](ss.request.user));
-                    }
-                    else {
-                        rolesFilter.push(publicObj.security[efSubscription.collection].read['default']);
-                    }
-                }
-                if (ss.request.user.roles) {
-                    for (var i in ss.request.user.roles) {                                                      //user level security
-                        if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]] != undefined && isFunction(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]])) {
-                            rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]](ss.request.user));
-                        }
-                        else if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]]) {
-                            rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]]);
-                        }
-                    }
-                }
-            }
 
-            if (efSubscription.find != undefined) {                                                         //add security filter to query
-                efSubscription.find = JSON.parse(efSubscription.find);
-                if (efSubscription.find._id) efSubscription.find[k] = mongojs.ObjectId(efSubscription.find._id);
-                for (var k in efSubscription.find) {
-                    if (efSubscription.find[k].regEx) {
-                        efSubscription.find[k] = new RegExp(efSubscription.find[k].regEx, 'i');
-                    }
-                }
-                if (rolesFilter.length > 0) {
-                    f.$and = [efSubscription.find, { $or: rolesFilter }]
-                }
-                else {
-                    f = efSubscription.find;
-                }
-            
-            }
-            else if (rolesFilter.length > 0)  {
-                    f = { $or: rolesFilter };
-            }
-
-            if(efSubscription.group) efSubscription.group = JSON.parse(efSubscription.group);
-            if(efSubscription.aggregate) efSubscription.aggregate = JSON.parse(efSubscription.aggregate);
-            if(efSubscription.projection) efSubscription.projection = JSON.parse(efSubscription.projection);
-            if(efSubscription.totals) efSubscription.totals = JSON.parse(efSubscription.totals);
-
-            if(efSubscription.group || efSubscription.aggregate || efSubscription.projection){                                                               //Aggregate building
-                var pipelines = [];
-                if(f != {} || efSubscription.projection || efSubscription.group) {                                             //complex find
-                    if(f) pipelines.push({$match : f});
-                    if(efSubscription.group) pipelines.push({$group : efSubscription.group});
-                    if(efSubscription.sort) pipelines.push({$sort : efSubscription.sort});
-                    if(efSubscription.skip) pipelines.push({$skip : efSubscription.skip}); 
-                    if(efSubscription.limit) pipelines.push({$limit : efSubscription.limit}); 
-                    if(efSubscription.projection) pipelines.push({$project : efSubscription.projection});
-                }
-                if(efSubscription.aggregate != {}) {                                                                  //user specicified aggregation
-                    if(isArray(efSubscription.aggregate)){
-                        for(var i in efSubscription.aggregate){
-                            pipelines.push(efSubscription.aggregate[i])
-                        }
-                    }
-                    else {
-                        pipelines.push(efSubscription.aggregate)
-                    }
-                };
-                cursor = collection.aggregate(pipelines, sendData);
-            
-                if(efSubscription.totals) {                                                                           //Build Totals
-                    var t = [];
-                    for(var i in pipelines){
-                        t.push(pipelines[i]);    
-                    }
-                    t.push({$group:efSubscription.totals});
-                    totalsCursor = collection.aggregate(t,sendTotals);
-                }
-            }
-            else {                                                                                                  //simple find
-                if(efSubscription.projection) {
-                    cursor = collection.find(f,efSubscription.projection);
-                }
-                else{
-                     cursor = collection.find(f);
-                }
-            
-                if (efSubscription.sort != undefined) { cursor.sort(efSubscription.sort); }
-                if (efSubscription.limit != undefined) { cursor.limit(efSubscription.length); }
-                cursor.toArray(sendData);
-
-                if(efSubscription.totals && efSubscription.totals._id === undefined) efSubscription.totals._id = null; 
-                if(efSubscription.totals) {                                                                     //build totals
-                    var t = [{$match:f}];
-                    if(!efSubscription.totalsSkipLimits){
-                        if (efSubscription.sort != undefined) t.push({$sort:efSubscription.sort}); 
-                        if (efSubscription.skip != undefined) t.push({$skip:efSubscription.skip}); 
-                        if (efSubscription.limit != undefined) t.push({$limit:efSubscription.limit}); 
-                    }
-                    t.push({$group:efSubscription.totals});
-                    socket.emit('totalsCalculating', { dataSend: efSubscription });
-                    totalsCursor = collection.aggregate(t,sendTotals);
-                }
-            }
-
-            if(cursor){
-                cursor.count(function (err, countReturn) {                                                  //update count
-                    ss.emit('countReturn', { count: countReturn, dataSend: efSubscription });
-                });
-            }
-        
-            function sendData (err, docs) {
-                var k = false;
-                if(efSubscription.aggregate || efSubscription.group || efSubscription.projection){
-                    k = true;
-                } else if (_id) {                                                   //in current set
-                    for (var i in efSubscription.docs) {
-                        if (efSubscription.docs[i].toString() === _id.toString()) {
-                            k = true;
-                            break;
-                        }
-                    }
-                    if (!k) {                                                           //in new set
-                        for (var i in docs) {
-                            if (docs[i]._id.toString() === _id.toString()) {
-                                k = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                else {
-                    k = true;
-                }
-                if (k) {                                                                //dont send if not in set
-                    if (efSubscription.newAtEnd) {
-                        var newObj = {}
-                        if ((typeof efSubscription.newAtEnd == "object") && (efSubscription.newAtEnd !== null)) {
-                            newObj = efSubscription.newAtEnd;
-                        }
-                        newObj._id = mongojs.ObjectId();
-                        newObj.$isNew = true;
-                        docs.push(newObj);
-                    }
-                    ss.emit('findUpdate', { err: err, docs: docs, dataSend: efSubscription });
-                }
-            }
-
-            function sendTotals(err, totals) {
-                    socket.emit('totalsReturn', { totals: totals, dataSend: efSubscription });
-            }
-        }
     
         socket.on('delete', function (data) {
             if (!db[data.collection]) collection = db.collection(data.collection);
@@ -606,6 +452,221 @@
             return listOfEfFields;
         }
     });
+
+
+    function sendFindUpdates(efSubscription,_id) {
+        
+        var cursor, collection, ss = io.to(efSubscription.socket), totalsCursor, f = {};
+        if (!db[efSubscription.collection]) {                                                           //get collection
+            collection = db.collection(efSubscription.collection);
+        }
+        var rolesFilter = [];        
+        //console.log(ss.request);
+        //console.log(ss.request.user);
+        if(ss.request && ss.request.user){
+                                                                               //build security filters
+            if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read['default']) {
+                if (isFunction(publicObj.security[efSubscription.collection].read['default'])) {                      //default security
+                    rolesFilter.push(publicObj.security[efSubscription.collection].read['default'](ss.request.user));
+                }
+                else {
+                    rolesFilter.push(publicObj.security[efSubscription.collection].read['default']);
+                }
+            }
+            if (ss.request.user.roles) {
+                for (var i in ss.request.user.roles) {                                                      //user level security
+                    if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]] != undefined && isFunction(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]])) {
+                        rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]](ss.request.user));
+                    }
+                    else if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]]) {
+                        rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]]);
+                    }
+                }
+            }
+        }
+
+        if (efSubscription.find != undefined) {                                                         //add security filter to query
+            efSubscription.find = JSON.parse(efSubscription.find);
+            if (efSubscription.find._id) efSubscription.find[k] = mongojs.ObjectId(efSubscription.find._id);
+            convertRegEx(efSubscription.find);
+            if (rolesFilter.length > 0) {
+                f.$and = [efSubscription.find, { $or: rolesFilter }]
+            }
+            else {
+                f = efSubscription.find;
+            }
+        
+        }
+        else if (rolesFilter.length > 0)  {
+                f = { $or: rolesFilter };
+        }
+
+        if(efSubscription.group) efSubscription.group = JSON.parse(efSubscription.group);
+        if(efSubscription.aggregate) efSubscription.aggregate = JSON.parse(efSubscription.aggregate);
+        if(efSubscription.projection) efSubscription.projection = JSON.parse(efSubscription.projection);
+        if(efSubscription.totals) efSubscription.totals = JSON.parse(efSubscription.totals);
+
+        if(efSubscription.group || efSubscription.aggregate || efSubscription.projection){                                                               //Aggregate building
+            var pipelines = [];
+            if(f != {} || efSubscription.projection || efSubscription.group) {                                             //complex find
+                if(f) pipelines.push({$match : f});
+                if(efSubscription.group) pipelines.push({$group : efSubscription.group});
+                if(efSubscription.sort) pipelines.push({$sort : efSubscription.sort});
+                if(efSubscription.skip) pipelines.push({$skip : efSubscription.skip}); 
+                if(efSubscription.limit) pipelines.push({$limit : efSubscription.limit}); 
+                if(efSubscription.projection) pipelines.push({$project : efSubscription.projection});
+            }
+            if(efSubscription.aggregate != {}) {                                                                  //user specicified aggregation
+                if(isArray(efSubscription.aggregate)){
+                    for(var i in efSubscription.aggregate){
+                        pipelines.push(efSubscription.aggregate[i])
+                    }
+                }
+                else {
+                    pipelines.push(efSubscription.aggregate)
+                }
+            };
+            cursor = collection.aggregate(pipelines, sendData);
+        
+            if(efSubscription.totals) {                                                                           //Build Totals
+                var t = [];
+                for(var i in pipelines){
+                    t.push(pipelines[i]);    
+                }
+                t.push({$group:efSubscription.totals});
+                totalsCursor = collection.aggregate(t,sendTotals);
+            }
+        }
+        else {                                                                                                  //simple find
+            if(efSubscription.projection) {
+                cursor = collection.find(f,efSubscription.projection);
+            }
+            else{
+                 cursor = collection.find(f);
+            }
+        
+            if (efSubscription.sort != undefined) { cursor.sort(efSubscription.sort); }
+            if (efSubscription.limit != undefined) { cursor.limit(efSubscription.length); }
+            cursor.toArray(sendData);
+
+            if(efSubscription.totals && efSubscription.totals._id === undefined) efSubscription.totals._id = null; 
+            if(efSubscription.totals) {                                                                     //build totals
+                var t = [{$match:f}];
+                if(!efSubscription.totalsSkipLimits){
+                    if (efSubscription.sort != undefined) t.push({$sort:efSubscription.sort}); 
+                    if (efSubscription.skip != undefined) t.push({$skip:efSubscription.skip}); 
+                    if (efSubscription.limit != undefined) t.push({$limit:efSubscription.limit}); 
+                }
+                t.push({$group:efSubscription.totals});
+                ss.emit('totalsCalculating', { dataSend: efSubscription });
+                totalsCursor = collection.aggregate(t,sendTotals);
+            }
+        }
+
+        if(cursor){
+            cursor.count(function (err, countReturn) {                                                  //update count
+                ss.emit('countReturn', { count: countReturn, dataSend: efSubscription });
+            });
+        }
+    
+        function sendData (err, docs) {
+            var k = false;
+            if(efSubscription.aggregate || efSubscription.group || efSubscription.projection){
+                k = true;
+            } else if (_id) {                                                   //in current set
+                for (var i in efSubscription.docs) {
+                    if (efSubscription.docs[i].toString() === _id.toString()) {
+                        k = true;
+                        break;
+                    }
+                }
+                if (!k) {                                                           //in new set
+                    for (var i in docs) {
+                        if (docs[i]._id.toString() === _id.toString()) {
+                            k = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                k = true;
+            }
+            if (k) {                                                                //dont send if not in set
+                if (efSubscription.newAtEnd) {
+                    var newObj = {}
+                    if ((typeof efSubscription.newAtEnd == "object") && (efSubscription.newAtEnd !== null)) {
+                        newObj = efSubscription.newAtEnd;
+                    }
+                    newObj._id = mongojs.ObjectId();
+                    newObj.$isNew = true;
+                    docs.push(newObj);
+                }
+                ss.emit('findUpdate', { err: err, docs: docs, dataSend: efSubscription });
+            }
+        }
+
+        function sendTotals(err, totals) {
+                socket.emit('totalsReturn', { totals: totals, dataSend: efSubscription });
+        }
+    }
+
+
+    publicObj.sendUpdates = function(collection,fields,_id){
+        var f = { collection: collection, command: 'find', $or: [{aggregate:{$exists:true}}, {group:{$exists:true}}] };
+        if(fields && fields.length > 0) f.$or.push({efFields:{$in:fields}});
+        if(_id) f.$or.push({ docs: mongojs.ObjectId(_id) });
+
+        subscriptions.find(f).toArray(function (err, efSubscriptions) {
+            if (efSubscriptions) efSubscriptions.forEach(function(n){sendFindUpdates(n, mongojs.ObjectId(_id));});
+        });
+    };
+    function convertRegEx(find){
+        for(var i in find){
+            if(isArray(find[i]) || isObject(find[i])){
+                convertRegEx(find[i]);
+            }
+            if(find[i].regEx){
+                find[i] = new RegExp(find[i].regEx, 'i');
+            }
+
+        }
+    }
+
+      function copy(find){
+        var newObj;
+        if(isArray(find)){
+            newObj = [];
+            for (var i in find){
+                var obj = {};
+                newObj.push(copy(find[i]))
+            }
+        }
+        else if (isObject(find)){
+            newObj = {};
+            for(var i in find){
+                if(isObject(find[i])){
+                    newObj[i] = {};
+                    newObj[i] = copy(find[i]);
+                }
+                else if(isArray(find[i]) ){
+                    newObj[i] = [];
+                    newObj[i] = copy(find[i]);
+                }
+                else{
+                    newObj[i] = find[i];
+                }
+
+            }
+        }
+        else {
+            newObj = find;
+        }
+
+        return newObj;
+    }
+
+    
 
     return publicObj;
     
