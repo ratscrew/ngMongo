@@ -149,6 +149,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
                             if (!localVars[docs[i]._id.toString()]) localVars[docs[i]._id.toString()] = {};
                             arrayResutls.push(newDoc(docs[i], collection, localVars[docs[i]._id.toString()],arrayResutls));
                         }
+                        if(afterUpdate != null) afterUpdate();
                     });
                 }, countReturn: function (countQ) {
                     $timeout(function () {

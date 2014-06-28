@@ -487,7 +487,7 @@
 
         if (efSubscription.find != undefined) {                                                         //add security filter to query
             efSubscription.find = JSON.parse(efSubscription.find);
-            if (efSubscription.find._id) efSubscription.find[k] = mongojs.ObjectId(efSubscription.find._id);
+            if (efSubscription.find._id) efSubscription.find._id = mongojs.ObjectId(efSubscription.find._id);
             convertRegEx(efSubscription.find);
             if (rolesFilter.length > 0) {
                 f.$and = [efSubscription.find, { $or: rolesFilter }]
