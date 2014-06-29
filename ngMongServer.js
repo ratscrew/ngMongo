@@ -373,7 +373,7 @@
                                 for (var i in data.doc.change) {
                                     ef.push(i);
                                 }                                                           //find subscriptions that are filtered by chenged fields or in the resultes of a query
-                                var f = { collection: data.collection, command: 'find', $or: [{ docs: mongojs.ObjectId(_id) }, {efFields:{$in:ef}}, {aggregate:{$exists:true}}, {group:{$exists:true}}] };
+                                var f = { collection: data.collection, command: 'find', $or: [{ docs: mongojs.ObjectId(_id) }, {efFields:{$in:ef}},{efFields:{$size:0 }}, {aggregate:{$exists:true}}, {group:{$exists:true}}] };
                                 if (data.updateMe == false) f.socket = { $ne: socket.id };
                                 subscriptions.find(f).toArray(function (err, efSubscriptions) {
                                                                                             //re-runs afected querys 
