@@ -114,8 +114,8 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
         newAtEnd = false,               // can be false or a new doc obj
         rid = $SocketsIo.rIdGen(),      // give this query a "guid"
         newDoc = doc,                   // the template doc applied to each item in the returned array
-        afterUpdate;                    // a functions called after each update
-
+        afterUpdate,                    // a functions called after each update
+        then;                           // a functions called after first return
 
         // removes all routing back to this query
         function clearQList() { if ($SocketsIo.qList[rid]) { delete $SocketsIo.qList[rid]; }; };
@@ -149,6 +149,8 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
                             if (!localVars[docs[i]._id.toString()]) localVars[docs[i]._id.toString()] = {};
                             arrayResutls.push(newDoc(docs[i], collection, localVars[docs[i]._id.toString()],arrayResutls));
                         }
+                        if(then != null) then();
+                        then = null;
                         if(afterUpdate != null) afterUpdate();
                     });
                 }, countReturn: function (countQ) {
@@ -269,6 +271,11 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
 
         arrayResutls.$afterUpdate = function (afterUpdateQ) {
             afterUpdate = afterUpdateQ;
+            return arrayResutls;
+        };
+
+        arrayResutls.$then = function (thenQ) {
+            then = thenQ;
             return arrayResutls;
         };
 
@@ -428,7 +435,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
             inProgress = true;
             var data = { collection: collection, requestId: rid, docId:theDoc._id };
             if (updateMe) data.updateMe = updateMe;
-            $SocketsIo.socket.emit('delete', data);
+            $SocketsIo.socket.emit('deleteDoc', data);
             $SocketsIo.qList[rid] = {
                 saveReturn: function (savedDoc) {
                     $timeout(function () {

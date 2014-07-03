@@ -4,6 +4,7 @@
     mongojs = publicObj.mongojs;
 
     app.use(express.static(__dirname + '/ngMongoClientScripts'));
+    app.use(express.static('/ngMongo',__dirname + '/ngMongoClientScripts'));
 
     publicObj.db = function(dbName){ 
         if(dbName){
@@ -290,7 +291,7 @@
 
 
     
-        socket.on('delete', function (data) {
+        socket.on('deleteDoc', function (data) {
             if (!db[data.collection]) collection = db.collection(data.collection);
             var _id = data.docId;
             collection.findOne({ _id: mongojs.ObjectId(_id) }, function (err, oldDoc) {
@@ -307,7 +308,7 @@
                          function (err, lastErrorObject) {
                         if(err) console.log({ err: err });
                         var f = { collection: data.collection, command: 'find' };
-                        if (data.updateMe == false) f.socket = { $ne: socket.id };
+                        //f.socket = { $ne: socket.id };
                         subscriptions.find(f).toArray(function (err, efSubscriptions) {
                             if (efSubscriptions) efSubscriptions.forEach(function(n){sendFindUpdates(n, mongojs.ObjectId(_id));});
                         });
@@ -374,7 +375,7 @@
                                     ef.push(i);
                                 }                                                           //find subscriptions that are filtered by chenged fields or in the resultes of a query
                                 var f = { collection: data.collection, command: 'find', $or: [{ docs: mongojs.ObjectId(_id) }, {efFields:{$in:ef}},{efFields:{$size:0 }}, {aggregate:{$exists:true}}, {group:{$exists:true}}] };
-                                if (data.updateMe == false) f.socket = { $ne: socket.id };
+                                if (data.updateMe != true) f.socket = { $ne: socket.id };
                                 subscriptions.find(f).toArray(function (err, efSubscriptions) {
                                                                                             //re-runs afected querys 
                                     if (efSubscriptions) efSubscriptions.forEach( function(n){sendFindUpdates(n, mongojs.ObjectId(_id));});
@@ -437,16 +438,16 @@
                     if ((isObject(query[i]) || isArray(query[i])) && i !== '_id') {
                         var sub = efFields(query[i])
                         for (var j in sub) {
-                            listOfEfFields[j] = '1';
+                            listOfEfFields[j] = sub[j];
                         }
                     }
                     if (i.indexOf('$') == -1 && !isArray(query)) {
-                        listOfEfFields[i] = '1';
+                        listOfEfFields[i] = query[i];
                     }
                 }
             }
             else if (query.indexOf('$') == -1) {
-                listOfEfFields[query] = '1';
+                listOfEfFields[query] = query;
             }
 
             return listOfEfFields;
