@@ -614,8 +614,8 @@
 
 
     publicObj.sendUpdates = function(collection,fields,_id){
-        var f = { collection: collection, command: 'find', $or: [{aggregate:{$exists:true}}, {group:{$exists:true}}] };
-        if(fields && fields.length > 0) f.$or.push({efFields:{$in:fields}});
+        var f = { collection: collection, command: 'find'};
+        if(fields && fields.length > 0) f.$or = [{aggregate:{$exists:true}}, {group:{$exists:true}}, {efFields:{$in:fields}}];
         if(_id) f.$or.push({ docs: mongojs.ObjectId(_id) });
 
         subscriptions.find(f).toArray(function (err, efSubscriptions) {
