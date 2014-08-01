@@ -619,7 +619,8 @@
         if(_id) f.$or.push({ docs: mongojs.ObjectId(_id) });
 
         subscriptions.find(f).toArray(function (err, efSubscriptions) {
-            if (efSubscriptions) efSubscriptions.forEach(function(n){sendFindUpdates(n, mongojs.ObjectId(_id));});
+            if(_id) _id = mongojs.ObjectId(_id);
+            if (efSubscriptions) efSubscriptions.forEach(function(n){sendFindUpdates(n, _id);});
         });
     };
     function convertRegEx(find){
