@@ -149,18 +149,21 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
                         $timeout(function () {
                             progress = 1;
                             arrayResutls.$clear();
+
                             for (var i = 0; i < docs.length; i++) {
-                                if (!localVars[docs[i]._id.toString()]) localVars[docs[i]._id.toString()] = {};
+                                var docId = "";
+                                if(docs[i]._id) docId = docs[i]._id.toString();                                
+                                if (!localVars[docId]) localVars[docId] = {};
                                 if ((group || aggregate) && fullItemKey){
-                                    if (!localVars[docs[i]._id.toString()][fullItemKey]) localVars[docs[i]._id.toString()][fullItemKey] = {};
+                                    if (!localVars[docId][fullItemKey]) localVars[docId][fullItemKey] = {};
                                     for(var j in docs[i][fullItemKey]){
-                                        if(!localVars[docs[i]._id.toString()][fullItemKey][docs[i][fullItemKey][j]._id.toString()]) localVars[docs[i]._id.toString()][fullItemKey][docs[i][fullItemKey][j]._id.toString()] = {};
-                                        docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docs[i]._id.toString()][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
+                                        if(!localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()]) localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()] = {};
+                                        docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
                                     }
                                     arrayResutls.push(docs[i]);
                                 } 
                                 else {
-                                    arrayResutls.push(newDoc(docs[i], collection, localVars[docs[i]._id.toString()],arrayResutls));
+                                    arrayResutls.push(newDoc(docs[i], collection, localVars[docId],arrayResutls));
                                 }
                             }
                             if(then != null) then();
@@ -191,10 +194,22 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
                     $timeout(function () {
                         progress = 1;
                         arrayResutls.$clear();
-                        for (var i = 0; i < docs.length; i++) {
-                            if (!localVars[docs[i]._id.toString()]) localVars[docs[i]._id.toString()] = {};
-                            arrayResutls.push(doc(docs[i], collection, localVars[docs[i]._id.toString()]));
-                        }
+                            for (var i = 0; i < docs.length; i++) {
+                                var docId = "";
+                                if(docs[i]._id) docId = docs[i]._id.toString();                                
+                                if (!localVars[docId]) localVars[docId] = {};
+                                if ((group || aggregate) && fullItemKey){
+                                    if (!localVars[docId][fullItemKey]) localVars[docId][fullItemKey] = {};
+                                    for(var j in docs[i][fullItemKey]){
+                                        if(!localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()]) localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()] = {};
+                                        docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
+                                    }
+                                    arrayResutls.push(docs[i]);
+                                } 
+                                else {
+                                    arrayResutls.push(newDoc(docs[i], collection, localVars[docId],arrayResutls));
+                                }
+                            }
                         if(afterUpdate != null) afterUpdate();
                     });
                 },
@@ -358,8 +373,20 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
                     $timeout(function () {
                         progress = 1;
                         for (var i = 0; i < docs.length; i++) {
-                            if (!localVars[docs[i]._id.toString()]) localVars[docs[i]._id.toString()] = {};
-                            arrayResutls.push(newDoc(docs[i], collection, localVars[docs[i]._id.toString()],arrayResutls));
+                            var docId = "";
+                            if(docs[i]._id) docId = docs[i]._id.toString();                                
+                            if (!localVars[docId]) localVars[docId] = {};
+                            if ((group || aggregate) && fullItemKey){
+                                if (!localVars[docId][fullItemKey]) localVars[docId][fullItemKey] = {};
+                                for(var j in docs[i][fullItemKey]){
+                                    if(!localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()]) localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()] = {};
+                                    docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
+                                }
+                                arrayResutls.push(docs[i]);
+                            } 
+                            else {
+                                arrayResutls.push(newDoc(docs[i], collection, localVars[docId],arrayResutls));
+                            }
                         }
                         if(afterUpdate != null) afterUpdate();
                     });
