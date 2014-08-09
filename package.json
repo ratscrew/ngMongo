@@ -1,6 +1,6 @@
 {
   "name": "ngmongo",
-  "version": "0.0.55",
+  "version": "0.0.65",
   "description": "An angular and node module for connecting to mongo",
   "main": "ngMongServer.js",
   "scripts": {
@@ -26,6 +26,6 @@
   "homepage": "https://github.com/ratscrew/ngMongo",
   "dependencies": {
     "express": "~4.4.3",
-    "mongojs": "~0.13.0"
+    "mongojs": "~0.13.1"
   }
 }

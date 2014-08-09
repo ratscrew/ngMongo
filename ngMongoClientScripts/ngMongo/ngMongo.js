@@ -115,7 +115,9 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
         rid = $SocketsIo.rIdGen(),      // give this query a "guid"
         newDoc = doc,                   // the template doc applied to each item in the returned array
         afterUpdate,                    // a functions called after each update
-        then;                           // a functions called after first return
+        then,                           // a functions called after first return
+        db,                             // default or first db by default but can be changed
+        fullItemKey;                    // for aggregate/group making subItems saveable
 
         // removes all routing back to this query
         function clearQList() { if ($SocketsIo.qList[rid]) { delete $SocketsIo.qList[rid]; }; };
@@ -136,23 +138,40 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
             if(group) data.group = group;
             if(totals) data.totals = totals;
             if(projection) data.projection = projection;
+            if(db) data.db = db;
 
             hasBeenCalled = true;
             $SocketsIo.socket.emit('find', data);                          // make request
              
             $SocketsIo.qList[rid] = {                                      // setup routing
                 findReturn: function (err, docs, sentData) {
-                    $timeout(function () {
-                        progress = 1;
-                        arrayResutls.$clear();
-                        for (var i = 0; i < docs.length; i++) {
-                            if (!localVars[docs[i]._id.toString()]) localVars[docs[i]._id.toString()] = {};
-                            arrayResutls.push(newDoc(docs[i], collection, localVars[docs[i]._id.toString()],arrayResutls));
-                        }
-                        if(then != null) then();
-                        then = null;
-                        if(afterUpdate != null) afterUpdate();
-                    });
+                    if(!err){
+                        $timeout(function () {
+                            progress = 1;
+                            arrayResutls.$clear();
+                            for (var i = 0; i < docs.length; i++) {
+                                if (!localVars[docs[i]._id.toString()]) localVars[docs[i]._id.toString()] = {};
+                                if ((group || aggregate) && fullItemKey){
+                                    if (!localVars[docs[i]._id.toString()][fullItemKey]) localVars[docs[i]._id.toString()][fullItemKey] = {};
+                                    for(var j in docs[i][fullItemKey]){
+                                        if(!localVars[docs[i]._id.toString()][fullItemKey][docs[i][fullItemKey][j]._id.toString()]) localVars[docs[i]._id.toString()][fullItemKey][docs[i][fullItemKey][j]._id.toString()] = {};
+                                        docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docs[i]._id.toString()][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
+                                    }
+                                    arrayResutls.push(docs[i]);
+                                } 
+                                else {
+                                    arrayResutls.push(newDoc(docs[i], collection, localVars[docs[i]._id.toString()],arrayResutls));
+                                }
+                            }
+                            if(then != null) then();
+                            then = null;
+                            if(afterUpdate != null) afterUpdate();
+                        });
+                    }
+                    else{
+                        console.log(err);
+                    }
+                    
                 }, countReturn: function (countQ) {
                     $timeout(function () {
                         count = countQ;
@@ -189,20 +208,28 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
             return arrayResutls;
         };
 
+        arrayResutls.$db = function (dbQ) {
+            db = dbQ;
+            if(hasBeenCalled) this.$toArray();
+            return this;
+        };
+
         arrayResutls.$find = function (findQ) {
             find = findQ;
             if(hasBeenCalled) this.$toArray();
             return this;
         };
 
-        arrayResutls.$aggregate = function (aggregateQ) {
+        arrayResutls.$aggregate = function (aggregateQ,fullItemKeyQ) {
             aggregate = aggregateQ;
+            if(fullItemKeyQ) fullItemKey = fullItemKeyQ;
             if(hasBeenCalled) this.$toArray();
             return this;
         };
 
-        arrayResutls.$group = function (groupQ) {
+        arrayResutls.$group = function (groupQ,fullItemKeyQ) {
             group = groupQ;
+            if(fullItemKeyQ) fullItemKey = fullItemKeyQ;
             if(hasBeenCalled) this.$toArray();
             return this;
         };
