@@ -48,7 +48,7 @@ Check out how it all works [here](https://github.com/ratscrew/ngMongo/wiki/how-i
 link scripts:
 
      <script src="/socket.io/socket.io.js"></script>
-     <script src="ngMongo.js"></script>
+     <script src="/ngMongo/ngMongo.js"></script>
 
 
 config angular:
