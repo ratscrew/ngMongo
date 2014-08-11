@@ -117,7 +117,8 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
         afterUpdate,                    // a functions called after each update
         then,                           // a functions called after first return
         db,                             // default or first db by default but can be changed
-        fullItemKey;                    // for aggregate/group making subItems saveable
+        fullItemKey,                    // for aggregate/group making subItems saveable
+        newAtStart;                     // same as new at end but at start
 
         // removes all routing back to this query
         function clearQList() { if ($SocketsIo.qList[rid]) { delete $SocketsIo.qList[rid]; }; };
@@ -128,7 +129,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
             arrayResutls.$cancel();                                          // stops updates for an old query for this obj if there is any
             rid = $SocketsIo.rIdGen();
             progress = 0;                                                    // build request
-            var data = { collection: collection, requestId: rid, find: find, progress: progressInc, newAtEnd: newAtEnd, length:1000, more: false, totalsSkipLimits: totalsSkipLimits }
+            var data = { collection: collection, requestId: rid, find: find, progress: progressInc, newAtEnd: newAtEnd, newAtStart: newAtStart, length:1000, more: false, totalsSkipLimits: totalsSkipLimits }
             if(limit) {
                 data.limit = limit;
                 data.length = arrayResutls.length + limit;
@@ -401,6 +402,13 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', function (
             if(hasBeenCalled) this.$toArray();
             return this;
         };
+
+        arrayResutls.$newAtStart = function (newAtStartQ) {
+            newAtStart = newAtStartQ;
+            if(hasBeenCalled) this.$toArray();
+            return this;
+        };
+
         return arrayResutls;
     }
 

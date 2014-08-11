@@ -250,7 +250,7 @@
             }
 
             function sendDocs (err, docs) {                                           //get set
-                if (data.newAtEnd && !data.more) {
+                if ((data.newAtEnd || data.newAtStart) && !data.more) {
                     var newObj = {}
                     if ((typeof data.newAtEnd == "object") && (data.newAtEnd !== null)) {   //add new obj at end
                         for (var i in data.newAtEnd) {
@@ -259,7 +259,8 @@
                     }
                     newObj._id = mongojs.ObjectId();
                     newObj.$isNew = true;
-                    docs.push(newObj);
+                    if (data.newAtEnd) docs.push(newObj);
+                    if (data.newAtStart) docs.unshift(newObj);
                 }
 
                 if(!data.more){
@@ -667,14 +668,15 @@
             //     k = true;
             // }
             // if (k) {                                                                //dont send if not in set
-                if (efSubscription.newAtEnd) {
+                if (efSubscription.newAtEnd || efSubscription.newAtStart) {
                     var newObj = {}
                     if ((typeof efSubscription.newAtEnd == "object") && (efSubscription.newAtEnd !== null)) {
                         newObj = efSubscription.newAtEnd;
                     }
                     newObj._id = mongojs.ObjectId();
                     newObj.$isNew = true;
-                    docs.push(newObj);
+                    if (efSubscription.newAtEnd) docs.push(newObj);
+                    if (efSubscription.newAtStart) docs.unshift(newObj);
                 }
                 ss.emit('findUpdate', { err: err, docs: docs, dataSend: efSubscription });
             //}
