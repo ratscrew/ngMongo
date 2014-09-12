@@ -174,9 +174,11 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                                         docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
                                     }
                                     arrayResutls.push(docs[i]);
+                                    indexOf[docId] = (arrayResutls.length - 1);
                                 } 
                                 else {
                                     arrayResutls.push(newDoc(docs[i], collection, localVars[docId],arrayResutls));
+                                    indexOf[docs[i]._id.toString()] = (arrayResutls.length - 1);
                                 }
                             }
                             if(then != null) then();
@@ -430,7 +432,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                             for (var i = 0; i < docs.length; i++) {
                                 var docId = "";
                                 if(docs[i]._id) docId = docs[i]._id.toString();
-                                arrayResutls.splice(indexOf[docId], 1);                                
+                                if(indexOf[docId]) arrayResutls.splice(indexOf[docId], 1);                                
                                 if (!localVars[docId]) localVars[docId] = {};
                                 if ((group || aggregate) && fullItemKey){
                                     if (!localVars[docId][fullItemKey]) localVars[docId][fullItemKey] = {};
