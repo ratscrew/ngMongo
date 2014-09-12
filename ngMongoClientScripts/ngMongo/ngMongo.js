@@ -125,8 +125,10 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
         fullItemKey,                    // for aggregate/group making subItems saveable
         newAtStart,                     // same as new at end but at start
         defer,                          // prommise
-        number = 0;
-        pNumber = 0;
+        number = 0,
+        pNumber = 0,
+        indexOf = {};
+
 
         // removes all routing back to this query
         function clearQList() { if ($SocketsIo.qList[rid]) { delete $SocketsIo.qList[rid]; }; };
@@ -220,9 +222,11 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                                             docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
                                         }
                                         arrayResutls.push(docs[i]);
+                                        indexOf[docId] = (arrayResutls.length - 1);
                                     } 
                                     else {
                                         arrayResutls.push(newDoc(docs[i], collection, localVars[docId],arrayResutls));
+                                        indexOf[docs[i]._id.toString()] = (arrayResutls.length - 1);
                                     }
                                 }
                             if(afterUpdate != null) afterUpdate();
@@ -342,7 +346,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
             rid = $SocketsIo.rIdGen();
         };
         arrayResutls._rid = function () { return rid;}
-        arrayResutls.$clear = function () { arrayResutls.splice(0, arrayResutls.length); return this; };
+        arrayResutls.$clear = function () { arrayResutls.splice(0, arrayResutls.length); indexOf = {}; return this; };
 
         arrayResutls.$count = function () { return count; };
 
@@ -425,7 +429,8 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                             progress = 1;
                             for (var i = 0; i < docs.length; i++) {
                                 var docId = "";
-                                if(docs[i]._id) docId = docs[i]._id.toString();                                
+                                if(docs[i]._id) docId = docs[i]._id.toString();
+                                arrayResutls.splice(indexOf[docId], 1);                                
                                 if (!localVars[docId]) localVars[docId] = {};
                                 if ((group || aggregate) && fullItemKey){
                                     if (!localVars[docId][fullItemKey]) localVars[docId][fullItemKey] = {};
