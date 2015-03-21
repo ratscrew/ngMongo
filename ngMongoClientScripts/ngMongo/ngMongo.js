@@ -4,7 +4,9 @@ var ngMongoModule = angular.module('ngMongo', []);
 // should be configuered to set url for the 
 ngMongoModule.provider('$SocketsIo', [function () {
     var me = {connected:false, url : 'http://localhost'};
-    
+    var defer;
+    me.$q = {};
+
     this.url = function(newUrl){                                                              //set the socket.io client script url
         if(newUrl) me.url = newUrl;
         return me.url ;
@@ -74,22 +76,30 @@ ngMongoModule.provider('$SocketsIo', [function () {
             }
         });
 
+        if(defer && defer.resolve) defer.resolve();
     };
 
 
 
     me.connect = function () {                                                                // called once if needed, handels respnce routing, may move to on('connect')
-        if (me.connected == true ) {
-            return true;
+        
+
+        if (me.connected == true) {
+
+            return defer.promise;
         }
+        
+        defer = me.$q.defer();
         me.socket = io.connect(me.url);
         me.connected = true;
-        me.socket.io.on('connect',routing);
-        me.socket.io.on('reconnect',routing);
-        routing();
+        me.socket.on('connect',routing);
+        me.socket.on('reconnect',routing);
+
+        return defer.promise;
     }
 
-    this.$get = function () {
+    this.$get = function ($q) {
+            me.$q = $q;
         return me;
     }
     
@@ -165,18 +175,20 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
 
                             for (var i = 0; i < docs.length; i++) {
                                 var docId = "";
-                                if(docs[i]._id) docId = docs[i]._id.toString();                                
+                                if(docs[i]._id) docId = docs[i]._id.toString();
+                                if(indexOf[docId]) arrayResutls.splice(indexOf[docId], 1);                                
                                 if (!localVars[docId]) localVars[docId] = {};
                                 if ((group || aggregate) && fullItemKey){
                                     if (!localVars[docId][fullItemKey]) localVars[docId][fullItemKey] = {};
                                     for(var j in docs[i][fullItemKey]){
                                         if(!localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()]) localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()] = {};
-                                        docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
+                                        docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()], arrayResutls)
                                     }
                                     arrayResutls.push(docs[i]);
                                     indexOf[docId] = (arrayResutls.length - 1);
                                 } 
                                 else {
+                                    if(indexOf[docs[i]._id.toString()]) arrayResutls.splice(indexOf[docs[i]._id.toString()], 1);
                                     arrayResutls.push(newDoc(docs[i], collection, localVars[docId],arrayResutls));
                                     indexOf[docs[i]._id.toString()] = (arrayResutls.length - 1);
                                 }
@@ -185,6 +197,9 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                             then = null;
                             if(afterUpdate != null) afterUpdate();
                             if(defer) defer.resolve(arrayResutls);
+                            $timeout(function(){
+                                scanObj(arrayResutls);
+                            },1);
                         });
                     }
                     else{
@@ -215,23 +230,28 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                             arrayResutls.$clear();
                                 for (var i = 0; i < docs.length; i++) {
                                     var docId = "";
-                                    if(docs[i]._id) docId = docs[i]._id.toString();                                
+                                    if(docs[i]._id) docId = docs[i]._id.toString();
+                                    if(indexOf[docId]) arrayResutls.splice(indexOf[docId], 1);                                
                                     if (!localVars[docId]) localVars[docId] = {};
                                     if ((group || aggregate) && fullItemKey){
                                         if (!localVars[docId][fullItemKey]) localVars[docId][fullItemKey] = {};
                                         for(var j in docs[i][fullItemKey]){
                                             if(!localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()]) localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()] = {};
-                                            docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
+                                            docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()],arrayResutls)
                                         }
                                         arrayResutls.push(docs[i]);
                                         indexOf[docId] = (arrayResutls.length - 1);
                                     } 
                                     else {
+                                        if(indexOf[docs[i]._id.toString()]) arrayResutls.splice(indexOf[docs[i]._id.toString()], 1);
                                         arrayResutls.push(newDoc(docs[i], collection, localVars[docId],arrayResutls));
                                         indexOf[docs[i]._id.toString()] = (arrayResutls.length - 1);
                                     }
                                 }
                             if(afterUpdate != null) afterUpdate();
+                            $timeout(function(){
+                                scanObj(arrayResutls);
+                            },1);
                         });   
                     }
                     
@@ -262,7 +282,10 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                                     return true;
                                 }
                             }
-                        //if(afterUpdate != null) afterUpdate();
+                        if(afterUpdate != null) afterUpdate();
+                        $timeout(function(){
+                            scanObj(arrayResutls);
+                        },1);
                         });
                     }
                 }
@@ -272,7 +295,8 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
         };
 
         arrayResutls.$db = function (dbQ) {
-            db = dbQ;
+                db = dbQ;
+                arrayResutls.db = db;
             if(hasBeenCalled) this.$toArray();
             return this;
         };
@@ -400,6 +424,17 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
             return limit;
         }
 
+        function checkDate (obj, key){
+            if(obj[key].match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/i)) obj[key] = new Date(obj[key]);
+        }
+
+        function scanObj(obj){
+            for(var i in obj){
+                if((angular.isArray(obj[i]) || angular.isObject(obj[i])) && !angular.isDate(obj[i])) scanObj(obj[i]);
+                else if(angular.isString(obj[i])) checkDate(obj, i);
+            }
+        }
+
         arrayResutls.$more = function (moreQ) {
             if(progress < 1){
                 return this;
@@ -429,6 +464,9 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                         pNumber = sentData.pNumber || 0;
                         $timeout(function () {
                             progress = 1;
+                            for (var i = 0; i < arrayResutls.length; i++) {
+                                if(arrayResutls[i]._id) indexOf[arrayResutls[i]._id.toString()] = arrayResutls.indexOf(arrayResutls[i]);
+                            }
                             for (var i = 0; i < docs.length; i++) {
                                 var docId = "";
                                 if(docs[i]._id) docId = docs[i]._id.toString();
@@ -438,16 +476,22 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                                     if (!localVars[docId][fullItemKey]) localVars[docId][fullItemKey] = {};
                                     for(var j in docs[i][fullItemKey]){
                                         if(!localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()]) localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()] = {};
-                                        docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()])
+                                        docs[i][fullItemKey][j] = newDoc(docs[i][fullItemKey][j], collection, localVars[docId][fullItemKey][docs[i][fullItemKey][j]._id.toString()], arrayResutls)
                                     }
                                     arrayResutls.push(docs[i]);
+                                    indexOf[docId] = arrayResutls.indexOf(docs[i]);
                                 } 
                                 else {
+                                    if(indexOf[docs[i]._id.toString()]) arrayResutls.splice(indexOf[docs[i]._id.toString()], 1);
                                     arrayResutls.push(newDoc(docs[i], collection, localVars[docId],arrayResutls));
+                                    indexOf[docs[i]._id.toString()] = arrayResutls.indexOf(docs[i]);
                                 }
                             }
                             if(afterUpdate != null) afterUpdate();
                             if(defer) defer.resolve(arrayResutls);
+                            $timeout(function(){
+                                scanObj(arrayResutls);
+                            },1);
                         });
                     }
                 };
@@ -509,10 +553,13 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
             return doc;
         };
 
+        theDoc.$strippedDoc = strippedDoc;
+
         function clearQList() { if ($SocketsIo.qList[rid]) { delete $SocketsIo.qList[rid]; }; };
         
+        var sdefer;
         theDoc.$save = function (updateMe,timeout,max,p) {
-
+            sdefer = $q.defer();
             if(timeout){
                 if(!max) max = 3; 
                 if(theDoc.localVar.saveTimer)  $timeout.cancel(theDoc.localVar.saveTimer);
@@ -536,7 +583,8 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                 theDoc.$cancelSave();
                 rid = $SocketsIo.rIdGen();
                 inProgress = true;
-                var data = { collection: collection, requestId: rid, doc: deepMatch(strippedDoc(), strippedDoc(theDoc.localVar.$oldDoc)) };
+                    var data = { collection: collection, requestId: rid, doc: deepMatch(strippedDoc(), strippedDoc(theDoc.localVar.$oldDoc)) };
+                    if (parentQuery && parentQuery.db) data.db = parentQuery.db;
                 if (theDoc.$isNew == true) {
                     data.doc = deepMatch(strippedDoc(), { _id: theDoc._id });
                     data.$isNew = true;
@@ -552,6 +600,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
                         saveReturn: function (savedDoc) {
                             $timeout(function () {
                                 inProgress = false;
+                                sdefer.resolve();
                             });
                         }
 
@@ -560,7 +609,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
 
             }
 
-            return this;
+            return sdefer.promise;;
         };
 
         theDoc.$delete = function (updateMe) {
@@ -586,6 +635,7 @@ ngMongoModule.service('$mongo', ['$SocketsIo', '$timeout', '$server', '$q', func
             return this;
         };
 
+        theDoc.$deepMatch = deepMatch;
         // compares two objects and returns a dictionaly for files with old new and save statment
         function deepMatch(odj1, odj2) {
             var returnObj = {
@@ -635,7 +685,9 @@ ngMongoModule.service('$server', ['$SocketsIo', '$timeout', '$q', function ($Soc
     this.functions = function (functionName, data) {
         var defer = $q.defer();
         var rid = $SocketsIo.rIdGen();
-        $SocketsIo.socket.emit('publicFunction', { functionName: functionName, requestId: rid, data:data });
+        $SocketsIo.connect().then( function(){
+            $SocketsIo.socket.emit('publicFunction', { functionName: functionName, requestId: rid, data:data });
+        }) 
         $SocketsIo.qList[rid] = {
             publicFunctionReturn: function (err, data, sentData) {
 

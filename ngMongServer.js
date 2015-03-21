@@ -159,7 +159,7 @@
 
             collection = thisDb.collection(data.collection);
 
-            
+            scanObj(data.find);
             if (data.find != undefined) {
                 var ff = copy(data.find);
 
@@ -179,6 +179,7 @@
                     f = { $or: rolesFilter };
             }
 
+            scanObj(data.aggregate);
             if(data.group || data.aggregate){                                                               //Aggregate building
                 var pipelines = [];
                 if(f != {} || data.projection || data.group) {
@@ -190,6 +191,7 @@
                 if(data.aggregate != undefined) {                                                                  //user specicified aggregation
                     if(isArray(data.aggregate)){
                         for(var i in data.aggregate){
+                            if(data.aggregate[i].$match) convertRegEx(data.aggregate[i].$match);
                             pipelines.push(data.aggregate[i])
                         }
                     }
@@ -372,8 +374,8 @@
                 else{
                     thisDb = db['default'];
                 }
-
-                collection = thisDb.collection(data.collection);
+                scanObj(data.doc);
+                var collection = thisDb.collection(data.collection);
                 var _id = data.doc._id;
                 //delete data.doc._id;
 
@@ -527,23 +529,23 @@
         var rolesFilter = [];        
         //console.log(ss.request);
         //console.log(ss.request.user);
-        if(ss.request && ss.request.user){
-                                                                               //build security filters
+        if(ss.sockets[0] && ss.sockets[0].client && ss.sockets[0].client.request && ss.sockets[0].client.request.user){
+            var user = ss.sockets[0].client.request.user                                                                   //build security filters
             if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read['default']) {
                 if (isFunction(publicObj.security[efSubscription.collection].read['default'])) {                      //default security
-                    rolesFilter.push(publicObj.security[efSubscription.collection].read['default'](ss.request.user));
+                    rolesFilter.push(publicObj.security[efSubscription.collection].read['default'](user));
                 }
                 else {
                     rolesFilter.push(publicObj.security[efSubscription.collection].read['default']);
                 }
             }
-            if (ss.request.user.roles) {
-                for (var i in ss.request.user.roles) {                                                      //user level security
-                    if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]] != undefined && isFunction(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]])) {
-                        rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]](ss.request.user));
+            if (user.roles) {
+                for (var i in user.roles) {                                                      //user level security
+                    if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[user.roles[i]] != undefined && isFunction(publicObj.security[efSubscription.collection].read[user.roles[i]])) {
+                        rolesFilter.push(publicObj.security[efSubscription.collection].read[user.roles[i]](user));
                     }
-                    else if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]]) {
-                        rolesFilter.push(publicObj.security[efSubscription.collection].read[ss.request.user.roles[i]]);
+                    else if (publicObj.security[efSubscription.collection] && publicObj.security[efSubscription.collection].read[user.roles[i]]) {
+                        rolesFilter.push(publicObj.security[efSubscription.collection].read[user.roles[i]]);
                     }
                 }
             }
@@ -551,6 +553,7 @@
 
         if (efSubscription.find != undefined) {                                                         //add security filter to query
             efSubscription.find = JSON.parse(efSubscription.find);
+            scanObj(efSubscription.find);
             if (efSubscription.find._id) efSubscription.find._id = mongojs.ObjectId(efSubscription.find._id);
             convertRegEx(efSubscription.find);
             if (rolesFilter.length > 0) {
@@ -587,9 +590,11 @@
 
                     if(efSubscription.projection) pipelines.push({$project : efSubscription.projection});
                 }
-                if(efSubscription.aggregate != {}) {                                                                  //user specicified aggregation
+                if(efSubscription.aggregate != {}) {
+                    scanObj(efSubscription.aggregate);                                                              //user specicified aggregation
                     if(isArray(efSubscription.aggregate)){
                         for(var i in efSubscription.aggregate){
+                            if(efSubscription.aggregate[i].$match) convertRegEx(efSubscription.aggregate[i].$match);
                             pipelines.push(efSubscription.aggregate[i])
                         }
                     }
@@ -668,8 +673,8 @@
 
         function sendData (err, docs) {
             var dList =[];
-            for(var i in docs){
-                dList.push(docs[i]._id.toString())
+            for (var i in docs) {
+                if (docs[i]._id) dList.push(docs[i]._id.toString());
             }
             subscriptions.update({_id:efSubscription._id},{$set:{docs:dList},lastUpdate:new Date(),$inc:{number:1}})
 
@@ -752,7 +757,24 @@
         return newObj;
     }
 
-    
+     function checkDate (obj, key){
+        if(obj[key].match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/i)) obj[key] = new Date(obj[key]);
+    }
+
+    function scanObj(obj){
+        for(var i in obj){
+            if((isArray(obj[i]) || isObject(obj[i])) && !isDate(obj[i])) scanObj(obj[i]);
+            else if(isString(obj[i])) checkDate(obj, i);
+        }
+    }
+
+    function isDate(val){
+        if(val != undefined && val != null && !isString(val)) return !!val.getUTCFullYear;
+        else false;
+    }
+    function isString(val){
+        return (typeof val == 'string' || val instanceof String);
+    }
 
     return publicObj;
     
